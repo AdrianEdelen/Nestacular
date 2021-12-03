@@ -4,10 +4,14 @@
 //TODO: change to filedialog
 using System.Text;
 using Nestacular;
+class Nestacular
+{
+    static void Main(string[] args)
+    {
+        var fp = @"nestest.nes";
+        var verFp = @"VerificationFile.txt"
 
-var fp = @"nestest.nes";
-
-//open filestream
+        //open filestream
 FileStream fs = new FileStream(fp, FileMode.Open);
 int hexIn; //placeholder for each read byte
 List<byte> LoadedRom = new List<byte>();
@@ -19,10 +23,15 @@ for (int i = 0; (hexIn = fs.ReadByte()) != -1; i++)
     //as if it was actually a cartridge
     //especially if we want to be able to read real cartridges later.
     LoadedRom.Add(Convert.ToByte(hexIn));
-
-
 }
-
+var sr = new StreamReader(verFp);
+string line;
+List<string> logOutput = new List<string>();
+logIndex = 0;
+while ((line = sr.ReadLine()) != null)
+{
+    logOutput.Add(line);
+}
 
 //create an ascii encoder for parsing bytes to strings
 ASCIIEncoding ascii = new ASCIIEncoding();
@@ -40,8 +49,14 @@ CPU.LoadRomIntoMemory(LoadedRom);
 
 while (true)
 {
+    var splitLine = System.Text.RegularExpressions.Regex.Split( logOutput[logIndex], @"\s{2,}");
+
+    if (splitLine[0] != CPU.PC.ToString("X2"))
+        Console.WriteLine($"Mismatch in log file line: {logIndex}: Current PC Address: {CPU.PC.ToString("X2")}. Log Memory address: {splitLine[0]}")
+
     CPU.SearchForOpcode();
 
+    logIndex++; //move to next log line
 }
 
 static void ROMChecker(List<byte> loadedRom)
@@ -124,6 +139,10 @@ static void ROMChecker(List<byte> loadedRom)
     Console.WriteLine("Press Any Key To continue");
     //Console.ReadKey();
     Console.WriteLine();
+
+    }
+}
+
 
 
 

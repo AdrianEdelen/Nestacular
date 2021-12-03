@@ -8,7 +8,7 @@ namespace Nestacular
 {
     internal class CPU
     {
-        byte[] Memory = new byte[0x10000];
+        public byte[] Memory = new byte[0x10000];
         //Memory Map 
         /* 0x0000 - 0x00FF
          * 0x0100 - 0x01FF STACK
@@ -24,6 +24,10 @@ namespace Nestacular
          * */
 
         //TODO: CPU cycle count is off somehow. I think its a before and after type thing
+        //TODO: REplace this stringbuilder mess with a ToString override of the state of the CPU, we can output that after each cycle.
+        //TODO: Replace search for opcode with a general CYCLE CPU Method.
+        //TODO: Within the cycle cpu, each op or cycle consuming thing, will report its cycles, then we will halt for n time according to the appropriate cycle time
+        //TODO abstract out some of these arbitrary bitshifts and movements, stuff like PC +=2 should be more like FetchNextInstruction();
         byte StackPointer = 0xFF;
         public ushort PC = 0xC000; //skip the header for now
         public byte Accumulator = 0x00;
@@ -34,7 +38,12 @@ namespace Nestacular
         public ulong CPUCycle = 0;
         public CPU()
         {
+            //Startup routine
+            //can probably make this more accurate
             CPUCycle = 4; //Why is this?
+            Flags.InterruptDisableFlag = false;
+            Flags.NegativeFlag = false; //test
+            
         }
 
         public void LoadRomIntoMemory(List<byte> LoadedRom)
@@ -56,9 +65,9 @@ namespace Nestacular
         public void SearchForOpcode()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append($"Accum: {Accumulator.ToString("X2")} | {PC.ToString("X2")}  {Memory[PC].ToString("X2")} ");
+            sb.Append($"{PC.ToString("X2")}  {Memory[PC].ToString("X2")} ");
 
-            CheckFlagStatus(); //check flag status since last op
+            
             switch (Memory[PC])
             {
                 case 0x4C: //jmp - Jump (addr1 addr2)
@@ -66,19 +75,19 @@ namespace Nestacular
                            //skip because they are the location to jump too
 
 
-                    sb.Append($"{Memory[PC + 1].ToString("X2")} {Memory[PC + 2].ToString("X2")}");
+                    sb.Append($"{PeekNextByte().ToString("X2")} {PeekByteAfterNext().ToString("X2")}");
                     PC = SwapNextTwoBytes();
-                    sb.Append($" JMP ${PC.ToString("X2")}       ");
+                    sb.Append($" JMP ${PC.ToString("X2")}");
                     CycleCPU(3);
                     break;
 
                 case 0xA2://LDX LoadX Register LDX (val)
                     //store the value in the next address in Register x
-                    RegisterX = Memory[PC + 1];
-
+                    RegisterX = PeekNextByte();
+                    SetZeroAndNegFlag(RegisterX);
 
                     PC += 2;
-                    sb.Append($"{RegisterX.ToString("X2")}    LDX #${RegisterX.ToString("X2")}        ");
+                    sb.Append($"{RegisterX.ToString("X2")}    LDX #${RegisterX.ToString("X2")}");
                     CycleCPU(2);
                     break;
 
@@ -90,11 +99,11 @@ namespace Nestacular
                  */
                 case 0x86: //STX Store X Register STX (val) Zero Page
                     //Load the value from register X into the specifed memory address (zero page)
-                    sb.Append($"{Memory[PC + 1].ToString("X2")}    STX ${Memory[PC + 1].ToString("X2")}");
+                    sb.Append($"{PeekNextByte().ToString("X2")}    STX ${PeekNextByte().ToString("X2")}");
 
-                    var pos = Memory[PC + 1];
+                    var pos = PeekNextByte();
                     Memory[pos] = RegisterX;
-                    sb.Append($" = {RegisterX.ToString("X2")}    ");
+                    sb.Append($" = {RegisterX.ToString("X2")}");
 
                     PC += 2;
                     CycleCPU(3);
@@ -109,18 +118,18 @@ namespace Nestacular
                     PushToStack(b[1]);
                     PushToStack(b[0]);
                     PC = SwapNextTwoBytes();
-                    sb.Append($"{Memory[PC + 1].ToString("X2")} {Memory[PC + 2].ToString("X2")} JSR ${PC.ToString("X2")}       ");
+                    sb.Append($"{PeekNextByte().ToString("X2")} {PeekByteAfterNext().ToString("X2")} JSR ${PC.ToString("X2")}");
                     CycleCPU(6);
                     break;
 
                 case 0xEA: //NOP
-                    sb.Append("      NOP             ");
+                    sb.Append("      NOP");
                     PC++;
                     CycleCPU(2);
                     break;
 
                 case 0x38: //SEC Set Carry Flag
-                    sb.Append("      SEC             ");
+                    sb.Append("      SEC");
                     Flags.CarryFlag = true;
                     PC++;
                     CycleCPU(2);
@@ -128,12 +137,12 @@ namespace Nestacular
 
                 case 0xB0: //BCS Branch on carry set BCS (label)
                     //jump as many addresses as the next address says plus one i think
-                    var jumpDistance = Memory[PC + 1] + 2; //get past the operand(1) jump n times (operand) and then one more so its n jumps PAST the operand and not landing on the last one
+                    var jumpDistance = PeekNextByte() + 2; //get past the operand(1) jump n times (operand) and then one more so its n jumps PAST the operand and not landing on the last one
                     Branch(Flags.CarryFlag, sb, "BCS");
                     break;
 
                 case 0x18: //CEC clear carry
-                    sb.Append("      CLC             ");
+                    sb.Append("      CLC");
                     Flags.CarryFlag = false;
                     PC++;
                     break;
@@ -145,13 +154,10 @@ namespace Nestacular
 
                 case 0xA9: //LDA Load Accumulator LDA (val)
 
-                    Accumulator = Memory[PC + 1];
+                    Accumulator = PeekNextByte();
                     PC += 2;
-                    if ((Accumulator & 128) != 0)
-                    {
-                        Flags.NegativeFlag = true;
-                    }
-                    sb.Append($"{Accumulator.ToString("X2")}    LDA #${Accumulator.ToString("X2")}        ");
+                    AccumChanged();
+                    sb.Append($"{Accumulator.ToString("X2")}    LDA #${Accumulator.ToString("X2")}");
                     break;
 
 
@@ -165,19 +171,18 @@ namespace Nestacular
 
                 //THIS MAY BE A PROBLEM
                 case 0x85: //STA Store accum into Zero page
-                    pos = Memory[PC + 1];
-                    var before = Memory[pos];
+                    
+                    pos = PeekNextByte();
+                    
+                    sb.Append($"{PeekNextByte().ToString("X2")}    STA ${PeekNextByte().ToString("X2")} = {Memory[pos].ToString("X2")}");
                     Memory[pos] = Accumulator;
-                    var after = Memory[pos];
-                    sb.Append($"{Memory[PC + 1].ToString("X2")}    STA ${Memory[PC + 1].ToString("X2")} = {Memory[pos].ToString("X2")}  ");
-
                     PC += 2;
                     break;
 
                 case 0x24: //BIT 
                     //BIT sets the z flag as though the value in the address tested were anded together with the accum the n and v flags are set to match bits 7 and 6 respectively in the 
                     //value store iat the tested address
-                    pos = Memory[PC + 1];
+                    pos = PeekNextByte();
 
 
                     if ((Accumulator & Memory[pos]) == 0x00)
@@ -195,7 +200,7 @@ namespace Nestacular
 
 
 
-                    sb.Append($"{Memory[PC + 1].ToString("X2")}    BIT ${Memory[PC + 1].ToString("X2")} = {Accumulator.ToString("X2")}  ");
+                    sb.Append($"{PeekNextByte().ToString("X2")}    BIT ${PeekNextByte().ToString("X2")} = {Accumulator.ToString("X2")}");
                     PC += 2;
                     break;
 
@@ -220,18 +225,18 @@ namespace Nestacular
                     var addr2 = PopFromStack();
                     var addr1 = PopFromStack();
                     PC = (ushort)((addr1 << 8 | addr2) + 0x0001);
-                    sb.Append($"      RTS             ");
+                    sb.Append($"      RTS");
                     break;
 
                 case 0x78: //SEI Set interrupt
                     Flags.InterruptDisableFlag = true;
-                    sb.Append($"      SEI             ");
+                    sb.Append($"      SEI");
                     PC++;
                     break;
 
                 case 0xF8: //SED Set Decimal
                     Flags.DecimalModeFlag = true;
-                    sb.Append($"      SED             ");
+                    sb.Append($"      SED");
                     PC ++;
                     break;
 
@@ -241,8 +246,8 @@ namespace Nestacular
                     var b1 = Flags.ZeroFlag;
                     var b2 = Flags.InterruptDisableFlag;
                     var b3 = Flags.DecimalModeFlag;
-                    var b4 = Flags.BreakCommandFlag;
-                    var b5 = Flags.nullFlag;
+                    var b4 = true;
+                    var b5 = true;
                     var b6 = Flags.OverflowFlag;
                     var b7 = Flags.NegativeFlag;
                     var flags = new bool[8]
@@ -264,6 +269,161 @@ namespace Nestacular
                     }
                     PushToStack(range);
                     PC++;
+                    sb.Append("      PHP");
+                    break;
+
+                case 0x68: //PLA set accumulator from the stack
+                    Accumulator = PopFromStack();
+                    SetZeroAndNegFlag(Accumulator);
+                    PC ++;
+                    sb.Append("      PLA");
+                    AccumChanged();
+                    break;
+                    
+                    //FRom Here, the strings are simpler, since I plan on refactoring them anyway
+                case 0x29: //AND Bitwise and with operand and accum
+                    var aa = PeekNextByte();
+                    var bb = Accumulator;
+                    byte c = (byte)(aa & bb);
+                    Accumulator = (byte)c;
+                    SetZeroAndNegFlag(Accumulator);
+                    sb.Append("      AND");
+                    PC +=2;
+                    AccumChanged();
+                    break;
+
+                case 0xC9: //CMP compare operand and Accum immediate value
+                    CMP(Accumulator, PeekNextByte());
+                    PC+=2;
+                    break;
+
+                case 0xD8: //CLD Clear Dec Flag
+
+                    Flags.DecimalModeFlag = false;
+                    PC ++;
+                    break;
+
+                case 0x048: //PHA push Accum to stack
+
+                    PushToStack(Accumulator);
+                    PC++;
+                    break;
+
+                case 0x28: //PLP pull stack to processor status
+
+
+                    var status = PopFromStack();
+                    Flags.CarryFlag = (status & 1) != 0;
+                    Flags.ZeroFlag = (status & 2) != 0;
+                    Flags.InterruptDisableFlag = (status & 4) != 0;
+                    Flags.DecimalModeFlag = (status & 8) != 0;
+                    Flags.BreakCommandFlag = (status & 16) != 0;
+                    Flags.nullFlag = (status & 32) != 0;
+                    Flags.OverflowFlag = (status & 64) != 0;
+                    Flags.NegativeFlag = (status & 128) != 0;
+                    
+                    PC++;
+                    break;
+
+                case 0x30: //BMI Branch on minus
+                    Branch(Flags.NegativeFlag, sb, "BMI");
+                    break;
+
+                case 0x09: //ORA or the accum and operand
+
+                    Accumulator |= PeekNextByte();
+                    AccumChanged();
+                    PC += 2;
+                    break;
+
+                case 0xB8: //CLV Clear overflow 
+
+                    Flags.OverflowFlag = false;
+                    PC++;
+                    break;
+
+                case 0x49: //EOR Exlusive OR the accum
+
+                    Accumulator ^= PeekNextByte();
+                    AccumChanged();
+                    PC += 2;
+                    break;
+
+/////////////////////////////////////////////////////////////////////
+                case 0x69: //ADC Add with carry                     // QUARANTINE ZONE
+                    ADC(PeekNextByte());                            // DON'T OPEN
+                                                         // DEAD INSIDE
+                    break;                                          //
+                                                                    //
+                case 0xE9: //SBC Subtract with carry                //
+                    //we will see if this shit works.               //
+                    ADC((byte)~PeekNextByte());                     //
+                                                                    //
+                    break;                                          //
+/////////////////////////////////////////////////////////////////////              
+
+                case 0xA0: //LDY Load Y register Immediate
+                    RegisterY = PeekNextByte();
+                    SetZeroAndNegFlag(RegisterY);
+                    PC += 2;
+                    break;
+
+
+                case 0xC0: //CPY CMP Y Immediate
+
+                    CMP(RegisterY, PeekNextByte());
+                    PC +=2;
+                    break;
+
+                case 0xE0: //CPX CMP X Immediate
+
+                    CMP(RegisterX, PeekNextByte());
+                    PC +=2;
+                    break;
+
+
+                case 0xC8: // INY Increment Register Y
+
+                    RegisterY++;
+                    SetZeroAndNegFlag(RegisterY);
+                    PC++;
+                    break;
+
+                case 0xE8: //INX Increment Register x
+
+                    RegisterX++;
+                    SetZeroAndNegFlag(RegisterX);
+                    PC++;
+                    break;
+
+                case 0x88: ///DEY Decrement Register Y
+
+                    RegisterY--;
+                    SetZeroAndNegFlag(RegisterY);
+                    PC++;
+                    break;
+
+                case 0xCA: // DEX Decrement Register X
+                    
+                    RegisterX--;
+                    SetZeroAndNegFlag(RegisterX);
+                    PC++;
+                    break;
+
+
+                case 0xA8: //TAY Transfer Accum into Register Y
+
+
+                    RegisterY = Accumulator;
+                    SetZeroAndNegFlag(RegisterY);
+                    PC++;
+                    break;
+
+                case 0xAA: //TAX Transfer Accum into register X
+
+                    RegisterX = Accumulator;
+                    SetZeroAndNegFlag(RegisterX);
+                    PC++;
                     break;
 
 
@@ -271,46 +431,107 @@ namespace Nestacular
 
                     Console.WriteLine($"Unknown OPCode: {Memory[PC].ToString("X2")} Mem Location: {PC.ToString("X2")}");
                     Console.WriteLine("Execution Halted...");
-                    Console.ReadKey();
+                    Console.Read();
                     break;
             }
 
-            sb.Append($"  Cycles: {CPUCycle}");
+            
             Console.WriteLine(sb);
 
 
         }
 
 
+        private void CMP(byte register, byte operand) 
+        {
+                    var aa = operand;
+                    var bb = register;
+                    if (bb > aa)
+                    {
+                        byte cc = (byte)(bb - aa);
+                        Flags.CarryFlag = true;
+                        Flags.ZeroFlag = false;
+                        Flags.NegativeFlag = (cc & 128) != 0;
+                    }
+                    else if (bb < aa)
+                    {
+                        byte cc = (byte)(bb - aa);
+                        Flags.CarryFlag = false;
+                        Flags.ZeroFlag = false;
+                        Flags.NegativeFlag = (cc & 128) != 0;
+                    }
+                    else
+                    {
+                        Flags.NegativeFlag = false;
+                        Flags.ZeroFlag = true;
+                        Flags.CarryFlag = true;
+                    }
+
+        }
+
+
+        private void ADC(byte op) {
+            //this is out here for now se we can use it for both adding and subtraction
+            // As The Prodigy once said: This is dangerous.
+                    //stop it patrick you're scaring him ^~&|^&~&^|()(|&^)
+                    var carry = Flags.CarryFlag ? 1 : 0; //is the carry flag set
+                    var sum = Accumulator + op + carry; //sum the Accum+operand+carry(if set)
+                    Flags.CarryFlag = sum > 0xFF ? true : false; //set/clear the carry based on the result.
+                    Flags.OverflowFlag = (~(Accumulator ^ op) & (Accumulator ^ sum) & 0x80) != 0 ? true :false;
+                    Accumulator = (byte)sum;
+                    AccumChanged();
+                    PC += 2;
+        }
+
+        private byte PeekNextByte() {
+            return Memory[PC + 1];
+        }
+        private byte PeekByteAfterNext(){
+            return Memory[PC + 2];
+        }
+        private void SetZeroAndNegFlag(byte value)
+        {
+            if ((value & 128) != 0)
+                        Flags.NegativeFlag = true;
+                    else Flags.NegativeFlag = false;
+            if (value != 0x00)
+                Flags.ZeroFlag = false;
+            else Flags.ZeroFlag = true;
+                    
+        }
         private StringBuilder Branch(bool DoBranch, StringBuilder sb, string opcodeSTR)
         {
-            var jumpDistance = Memory[PC + 1] + 2;
+            var jumpDistance = PeekNextByte() + 2;
 
             if (DoBranch)
             {
-                sb.Append($"{Memory[PC + 1].ToString("X2")}    {opcodeSTR} ${(PC + jumpDistance).ToString("X2")}       ");
+                sb.Append($"{PeekNextByte().ToString("X2")}    {opcodeSTR} ${(PC + jumpDistance).ToString("X2")}");
                 PC += (ushort)jumpDistance;
 
             }
             else
             {
-                sb.Append($"{Memory[PC + 1].ToString("X2")}    {opcodeSTR} ${(PC + jumpDistance).ToString("X2")}       ");
+                sb.Append($"{PeekNextByte().ToString("X2")}    {opcodeSTR} ${(PC + jumpDistance).ToString("X2")}");
                 PC += 2;
             }
             return sb;
         }
-        private void CheckFlagStatus()
+        private void AccumChanged()
         {
             if (Accumulator != 0x00)
                 Flags.ZeroFlag = false;
             else Flags.ZeroFlag = true;
+            if ((Accumulator & 128) != 0)
+            {
+                Flags.NegativeFlag = true;
+            }
+            else Flags.NegativeFlag = false;
 
         }
-
         private ushort SwapNextTwoBytes()
         {
-            var addr1 = Memory[PC + 1];
-            var addr2 = Memory[PC + 2];
+            var addr1 = PeekNextByte();
+            var addr2 = PeekByteAfterNext();
             return (ushort)(addr2 << 8 | addr1);
         }
         private void CycleCPU(int cycles)
@@ -358,6 +579,8 @@ namespace Nestacular
         public bool nullFlag { get; set; } // Not used
         public bool OverflowFlag { get; set; }
         public bool NegativeFlag { get; set; }
+
+        
 
 
     }

@@ -79,6 +79,10 @@ class Program
             {
                 Console.WriteLine($"Mismatch in log file line (Y Register Mismatch): {logIndex}: Current Y Value: {CPU.RegisterY.ToString("X2")}. Log Y Value: {expectedYRegValue}");
             }
+            if (expectedAccumulatorValue != CPU.Accumulator.ToString("X2"))
+            {
+                Console.WriteLine($"Mismatch in log file line (Accumulator Mismatch): {logIndex}: Current A Value: {CPU.Accumulator.ToString("X2")}. Log A Value: {expectedAccumulatorValue}");
+            }
 
         CPU.SearchForOpcode();
 

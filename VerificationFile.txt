@@ -34,7 +34,7 @@ C774  D0 03     BNE $C779                       A:00 X:00 Y:00 P:26 SP:FB PPU:  
 C776  4C 7D C7  JMP $C77D                       A:00 X:00 Y:00 P:26 SP:FB PPU:  0,264 CYC:88
 C77D  EA        NOP                             A:00 X:00 Y:00 P:26 SP:FB PPU:  0,273 CYC:91
 C77E  A9 FF     LDA #$FF                        A:00 X:00 Y:00 P:26 SP:FB PPU:  0,279 CYC:93
-C780  85 01     STA $01 = 00                    A:FF X:00 Y:00 P:  SP:FB PPU:  0,285 CYC:95
+C780  85 01     STA $01 = 00                    A:FF X:00 Y:00 P:A4 SP:FB PPU:  0,285 CYC:95
 C782  24 01     BIT $01 = FF                    A:FF X:00 Y:00 P:A4 SP:FB PPU:  0,294 CYC:98
 C784  70 04     BVS $C78A                       A:FF X:00 Y:00 P:E4 SP:FB PPU:  0,303 CYC:101
 C78A  EA        NOP                             A:FF X:00 Y:00 P:E4 SP:FB PPU:  0,312 CYC:104

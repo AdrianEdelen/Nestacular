@@ -38,6 +38,7 @@ class Program
 
         while (true)
         {
+            var isMismatch = false;
             if (CPU.IsNewOP)
             {
                 Trace.WriteLine($"{logOutput[logIndex - 1]}");
@@ -51,29 +52,17 @@ class Program
             var expectedXRegValue = logOutput[logIndex].Substring(55, 2);
             var expectedYRegValue = logOutput[logIndex].Substring(60, 2);
             var expectedCPUCycle = logOutput[logIndex].Substring(90);
-
-            if (expectedMemLocation != CPU.PC.ToString("X2"))
-                Trace.WriteLine($"Mismatch in log file line: {logIndex}: Current PC Address: {CPU.PC.ToString("X2")}. Log Memory address: {expectedMemLocation}");
+            
+            if (expectedMemLocation != CPU.PC.ToString("X2")) isMismatch = true;
             for (var i = 0; i < expectedOpCodeAndParams.Count(); i++)
                 if (expectedOpCodeAndParams[i] != CPU.Memory[CPU.PC + i].ToString("X2"))
-                {
-
-                    Trace.WriteLine($"Mismatch in log file line (Wrong Opcode or param): {logIndex}: Current Memory Value: {CPU.Memory[CPU.PC + i].ToString("X2")}. Log Memory Value: {expectedOpCodeAndParams[i]}");
-                }
-
-            if (expectedXRegValue != CPU.RegisterX.ToString("X2"))
-            {
-                Trace.WriteLine($"Mismatch in log file line (X Register Mismatch): {logIndex}: Current X Value: {CPU.RegisterX.ToString("X2")}. Log X Value: {expectedXRegValue}");
-            }
-            if (expectedYRegValue != CPU.RegisterY.ToString("X2"))
-            {
-                Trace.WriteLine($"Mismatch in log file line (Y Register Mismatch): {logIndex}: Current Y Value: {CPU.RegisterY.ToString("X2")}. Log Y Value: {expectedYRegValue}");
-            }
-            if (expectedAccumulatorValue != CPU.Accumulator.ToString("X2"))
-            {
-                Trace.WriteLine($"Mismatch in log file line (Accumulator Mismatch): {logIndex}: Current A Value: {CPU.Accumulator.ToString("X2")}. Log A Value: {expectedAccumulatorValue}");
-            }
-
+                    isMismatch = true;
+            if (expectedXRegValue != CPU.RegisterX.ToString("X2")) isMismatch = true;
+            if (expectedYRegValue != CPU.RegisterY.ToString("X2")) isMismatch = true;
+            if (expectedAccumulatorValue != CPU.Accumulator.ToString("X2")) isMismatch = true;
+            if (isMismatch) Console.WriteLine($"Expected = {logOutput[logIndex]}");
+            if (isMismatch) Console.WriteLine($"Actual   = {CPU.PC.ToString("X2")}  {CPU.Memory[CPU.PC].ToString("X2")} {CPU.Memory[CPU.PC + 1].ToString("X2")}     XXX $XXXX                       A:{CPU.Accumulator.ToString("X2")} X:{CPU.RegisterX.ToString("X2")} Y:{CPU.RegisterY.ToString("X2")} P:{CPU.Status.ToString("X2")} SP:{CPU.StackPointer.ToString("X2")} PPU:  X,  X CYC:XXX");
+            if (isMismatch) Console.Read();
             CPU.CycleCPU();
 
             logIndex++; //move to next log line

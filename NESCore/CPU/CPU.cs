@@ -659,19 +659,8 @@ namespace Nestacular
             Flags.OverflowFlag = (~(Accumulator ^ op) & (Accumulator ^ sum) & 0x80) != 0 ? true : false;
             Accumulator = (byte)sum;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
 
         }
         private void AND(byte op)
@@ -679,19 +668,8 @@ namespace Nestacular
             Accumulator = (byte)(Accumulator & op);
             SetZeroAndNegFlag(Accumulator);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void ASL(byte op)
         {
@@ -710,19 +688,8 @@ namespace Nestacular
             Memory[curMemLocation] = temp;
             SetZeroAndNegFlag(Memory[curMemLocation]);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void ASL() //Implied Overload
         {
@@ -730,75 +697,31 @@ namespace Nestacular
             else Flags.CarryFlag = false;
             Accumulator = (byte)(Accumulator << 1);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BCC()
         {
             //jump as many addresses as the next address says plus one i think
             Branch(!Flags.CarryFlag);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BCS()
         {
             //jump as many addresses as the next address says plus one i think
             Branch(Flags.CarryFlag);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BEQ()
         {
             Branch(Flags.ZeroFlag);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BIT(byte op)
         {
@@ -812,200 +735,79 @@ namespace Nestacular
             if ((pos & 64) != 0) Flags.OverflowFlag = true;
             else Flags.OverflowFlag = false;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BMI()
         {
             Branch(Flags.NegativeFlag);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BNE()
         {
             Branch(!Flags.ZeroFlag);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BPL()
         {
             Branch(!Flags.NegativeFlag);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BRK()
         {
             PC++;
             NMI();
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BVC()
         {
             Branch(!Flags.OverflowFlag);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void BVS()
         {
             Branch(Flags.OverflowFlag);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void CLC()
         {
             Flags.CarryFlag = false;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void CLD()
         {
             Flags.DecimalModeFlag = false;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void CLI()
         {
             Flags.InterruptDisableFlag = false;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void CLV()
         {
             Flags.OverflowFlag = false;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void CMP(byte register, byte operand)
         {
@@ -1032,19 +834,8 @@ namespace Nestacular
                 Flags.CarryFlag = true;
             }
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
 
         }
         private void CPX() { throw new NotImplementedException(); }
@@ -1054,151 +845,63 @@ namespace Nestacular
             Memory[curMemLocation]--;
             SetZeroAndNegFlag(Memory[curMemLocation]);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void DEX()
         {
             RegisterX--;
             SetZeroAndNegFlag(RegisterX);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void DEY()
         {
             RegisterY--;
             SetZeroAndNegFlag(RegisterY);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void EOR(byte op)
         {
             Accumulator ^= op;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void INC(byte op)
         {
             Memory[curMemLocation]++;
             SetZeroAndNegFlag(Memory[curMemLocation]);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void INX()
         {
             RegisterX++;
             SetZeroAndNegFlag(RegisterX);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void INY()
         {
             RegisterY++;
             SetZeroAndNegFlag(RegisterY);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void JMP(ushort jmpLocation) //Indirect
         {
             PC = jmpLocation;
             _currentMode = AddressModes.NO_PC_CHANGE;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void JMP()
         {
@@ -1207,19 +910,8 @@ namespace Nestacular
             PC = SwapNextTwoBytes();
             _currentMode = AddressModes.NO_PC_CHANGE;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void JSR()
         {
@@ -1232,19 +924,8 @@ namespace Nestacular
             PC = SwapNextTwoBytes();
             _currentMode = AddressModes.NO_PC_CHANGE;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void LDA(byte op)
         {
@@ -1252,57 +933,24 @@ namespace Nestacular
             AccumChanged();
             //HACK: the accum changed doesn't actually trigger, it didn't change (but was accessed)
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void LDX(byte op)
         {
             RegisterX = op;
             SetZeroAndNegFlag(RegisterX);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void LDY(byte op)
         {
             RegisterY = op;
             SetZeroAndNegFlag(RegisterY);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void LSR(byte op)
         {
@@ -1312,19 +960,8 @@ namespace Nestacular
             SetZeroAndNegFlag(op);
             Memory[curMemLocation] = op;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void LSR()
         {
@@ -1335,90 +972,35 @@ namespace Nestacular
             else Flags.CarryFlag = false;
             Accumulator = (byte)(Accumulator >> 1);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void NOP(byte op)
         {
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void NOP()
         {
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void ORA(byte index)
         {
             Accumulator |= index;
             SetZeroAndNegFlag(Accumulator);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void PHA()
         {
             PushToStack(Accumulator);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void PHP()
         {
@@ -1449,38 +1031,16 @@ namespace Nestacular
             }
             PushToStack(range);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void PLA()
         {
             Accumulator = PopFromStack();
             SetZeroAndNegFlag(Accumulator);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void PLP()
         {
@@ -1494,19 +1054,8 @@ namespace Nestacular
             Flags.OverflowFlag = (status & 64) != 0;
             Flags.NegativeFlag = (status & 128) != 0;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void ROL(byte op)
         {
@@ -1520,19 +1069,8 @@ namespace Nestacular
             Memory[curMemLocation] = (byte)(shiftedAccum | bit0);
             SetZeroAndNegFlag(Memory[curMemLocation]);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void ROL() //Acumulator Overload
         {
@@ -1545,19 +1083,8 @@ namespace Nestacular
             shiftedAccum = (byte)(Accumulator << 1); //shift the accum left 1
             Accumulator = (byte)(shiftedAccum | bit0);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void ROR(byte op)
         {
@@ -1571,19 +1098,8 @@ namespace Nestacular
             Memory[curMemLocation] = (byte)(shiftedAccum | bit7);
             SetZeroAndNegFlag(Memory[curMemLocation]);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void ROR()
         {
@@ -1597,19 +1113,8 @@ namespace Nestacular
             var shiftedAccum = (byte)(Accumulator >> 1); //shift the accum right 1
             Accumulator = (byte)(shiftedAccum | bit7);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void RTI()
         {
@@ -1625,19 +1130,8 @@ namespace Nestacular
             PC = (ushort)(PC2 << 8 | PC1);
             _currentMode = AddressModes.NO_PC_CHANGE;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void RTS()
         {
@@ -1646,259 +1140,87 @@ namespace Nestacular
             PC = (ushort)((addr1 << 8 | addr2) + 0x0001);
             _currentMode = AddressModes.NO_PC_CHANGE;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void SBC(byte op)
         {
             ADC((byte)~op);
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void SEC()
         {
             Flags.CarryFlag = true;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void SED()
         {
             Flags.DecimalModeFlag = true;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void SEI()
         {
             Flags.InterruptDisableFlag = true;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void STA(byte op)
         {
 
             Memory[curMemLocation] = Accumulator;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void STX(byte op)
         {
             Memory[curMemLocation] = RegisterX;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void STY(byte op)
         {
             Memory[curMemLocation] = RegisterY;
 
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            
+            
         }
         private void TAX()
         {
             RegisterX = Accumulator;
             SetZeroAndNegFlag(RegisterX);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
         }
         private void TAY()
         {
             RegisterY = Accumulator;
             SetZeroAndNegFlag(RegisterY);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
         }
         private void TSX()
         {
             RegisterX = StackPointer;
-            SetZeroAndNegFlag(RegisterX);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            SetZeroAndNegFlag(RegisterX); 
         }
         private void TXA()
         {
             Accumulator = RegisterX;
             SetZeroAndNegFlag(Accumulator);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
         }
         private void TXS()
         {
             StackPointer = RegisterX;
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
-
         }
         private void TYA()
         {
             Accumulator = RegisterY;
-            SetZeroAndNegFlag(Accumulator);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            SetZeroAndNegFlag(Accumulator); 
         }
         #endregion
         #region Illegal Instructions
@@ -1910,40 +1232,12 @@ namespace Nestacular
         private void SLO(byte op)
         {
             ASL(op);
-            Accumulator |= Memory[curMemLocation];
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            Accumulator |= Memory[curMemLocation];   
         }
         private void ISC(byte op)
         {
             Memory[curMemLocation]++;
             SBC(Memory[curMemLocation]);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
         }
         private void SHA(byte op) { throw new NotImplementedException(); }
         private void TAS(byte op) { throw new NotImplementedException(); }
@@ -1954,40 +1248,13 @@ namespace Nestacular
         private void RLA(byte op)
         {
             ROL(Memory[curMemLocation]);
-            AND(Memory[curMemLocation]);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            AND(Memory[curMemLocation]);  
         }
         private void SRE(byte op)
         {
             ROR(Memory[curMemLocation]);
             EOR(Memory[curMemLocation]);
             SetZeroAndNegFlag(Memory[curMemLocation]);
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
         }
         private void ALR(byte op) { throw new NotImplementedException(); }
         private void RRA(byte op) { ROR(op); ADC(op); }
@@ -1995,76 +1262,20 @@ namespace Nestacular
         private void LAX(byte op)
         {
             LDA(op);
-            LDX(op);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
+            LDX(op); 
         }
         private void SAX(byte op)
         {
             Memory[curMemLocation] = ((byte)(Accumulator & RegisterX));
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
         }
         private void USBC(byte op)
         {
             SBC(op);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
         }
         private void DCP(byte op)
         {
             DEC(op);
             CMP(Accumulator, Memory[curMemLocation]);
-
-            var cycles = 2;
-            switch (_currentMode)
-            {
-                case AddressModes.Implied: cycles++; break;
-                case AddressModes.Immediate: cycles++; break;
-                case AddressModes.ZeroPage: cycles++; break;
-                case AddressModes.ZeroPageX: cycles++; break;
-                case AddressModes.Absolute: cycles++; break;
-                case AddressModes.AbsoluteX: cycles++; break;
-                case AddressModes.AbsoluteY: cycles++; break;
-                case AddressModes.XIndexedIndirect: cycles++; break;
-                case AddressModes.YindexedIndirect: cycles++; break;
-            }
         }
         private void LXA(byte op) { throw new NotImplementedException(); }
         private void ANE(byte op) { throw new NotImplementedException(); }

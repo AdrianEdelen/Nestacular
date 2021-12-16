@@ -8,15 +8,28 @@ namespace Nestacular
 {
     public class PPU
     {
+        private byte[] RAM;
         public byte[] VRAM = new byte[0x10000];
         public byte[] SPRRAM = new byte[0x256];
         byte StackPointer = 0xFD;
-        public ushort PC = 0xC000; //skip the header for now
-        
-
-        public PPU()
+        private ushort VRAMPointer;
+        private byte PPUControlOne { get => RAM[0x2000]; }
+        private byte PPUControlTwo { get => RAM[0x2001]; }
+        private long internalClock = 0;
+        public PPU(ref byte[] ram)
         {
+            RAM = ram;
+            RAM[0x2000] = 0x00;
+            RAM[0x2001] = 0x00;
+            //if CPU before clock cycle 29658
+            //ignore writes to PPUCTRL, PPUMASK, PPUSCROLL, PPUADDR
 
+            //PPUSTATUS, OAMADDR, OAMDATA will work immediately
+        }
+
+        public void StepTo(long masterClock)
+        {
+            throw new NotImplementedException();
         }
     }
 

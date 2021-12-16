@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 
 namespace Nestacular
 {
-    static public class CartridgeLoader
+    public class CartridgeLoader
     {
-        static public List<byte> LoadCart()
+        //TODO: here I think is where we will parse the different emulator file types
+        public byte[] Memory { get; set; }
+        public CartridgeLoader(ref byte[] memory)
+        {
+            Memory = memory;
+        }
+        public void LoadCart()
         {
             var fp = @"nestest.nes";
-            var verFp = @"VerificationFile.txt";
 
             //open filestream
             FileStream fs = new FileStream(fp, FileMode.Open);
@@ -27,11 +32,24 @@ namespace Nestacular
                 //especially if we want to be able to read real cartridges later.
                 LoadedRom.Add(Convert.ToByte(hexIn));
             }
-
-            return LoadedRom;
+            LoadRomIntoMemory(LoadedRom);
+            
+        }
+        private void LoadRomIntoMemory(List<byte> LoadedRom)
+        {
+            //when we start to load different cart types, we need to be more specific with what is loaded
+            //e.g. PRG PRF
+            //16384 bytes for PRG-ROM
+            //PRG rom lower
+            for (var i = 0; i < 0x4000; i++)
+            {
+                var addr = LoadedRom[0x10 + i];
+                Memory[0x8000 + i] = addr; //add PRG to lower PRG-rom section
+                Memory[0xC000 + i] = addr; //add PRF to upper PRG-rom section
+            }
         }
 
-        static public void RomChecker(List<byte> rom)
+        public void RomChecker(List<byte> rom)
         {
             //16-byte header
             var Header = new List<byte>();

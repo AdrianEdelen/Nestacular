@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Nestacular;
 using Nestacular.NES2;
 using Nestacular.NESCore;
@@ -17,7 +18,16 @@ class Program
     static void Main(string[] args)
     {
         var nes = new NES2();
-        nes._CPU.Clock();
+        ulong totalCycles = 0;
+        var sw = new Stopwatch();
+        sw.Start();
+        Task.Run(() => {
+            while(sw.ElapsedMilliseconds < 1000)
+            {
+                totalCycles += nes.MasterClockAdvance();
+            }
+            Console.WriteLine($"elapsed ms: {sw.ElapsedMilliseconds} | {totalCycles}");
+        });
         //nes.loader.LoadCart();
         var verFp = @"VerificationFile.txt";
         var sr = new StreamReader(verFp);

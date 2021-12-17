@@ -1,6 +1,7 @@
 ﻿using Nestacular.NESCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,14 +22,47 @@ namespace Nestacular.NES2
     internal class NES2
     {
         BUS _bus;
-        public CPU2 _CPU;
-
+        //public CPU2 _CPU;
+        public ulong masterClock = 0;
         public NES2()
         {
             _bus = new BUS();
-            _CPU = new CPU2(_bus);
+            //_CPU = new CPU2(_bus);
+            
         }
 
+        //1.79 MHz the CPU executes 1,790,000 cyles per second.
+        //Time between each cycle 0.000000558659217877095 seconds or
+        //1s = 1000 ms            0.000001
+        //.001s = 1ms
+        //.000001 = 1 microsecond
+        //.000000001 = 1 nanosecond
+        //.000000000001 1 picosecond.
 
+        //558 nanoseconds per cycle OR .558 microseconds.
+        //a .NET tick is 100 nanoseconds, which can get us accuracy of within 50ish nanoseconds.
+        //basically we need to execute a clock cycle every 5 ticks.
+        public ulong MasterClockAdvance() 
+        {   var sw = new Stopwatch();
+            sw.Start();
+            //sleep/block appropriate time for clock speed
+            //this stopwatch should take into consideration the time it takes to process everything on host
+            //so if the host takes 3 ticks to process, we should only NOP for 2.
+            masterClock ++;
+            //_CPU.StepTo(masterClock);
+            NOP(0.000000558659217877095, sw.ElapsedTicks);
+            return 1;
+        }
+
+        private static void NOP(double durationSeconds, long alreadyElapsed)
+        {
+            var durationTicks = Math.Round(durationSeconds * Stopwatch.Frequency) - alreadyElapsed;;
+            var sw = Stopwatch.StartNew();
+            
+            while (sw.ElapsedTicks < durationTicks)
+            {
+
+            }
+        }
     }
 }

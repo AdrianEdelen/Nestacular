@@ -13,7 +13,7 @@ namespace Nestacular.NESCore
         public PPU ppu;
         private CU cu;
         public CartridgeLoader loader;
-        public long MasterClock = 0;
+        public ulong MasterClock = 0;
 
 
         private int clockSpeed = 1; //the time in milliseconds to advance the master clock.

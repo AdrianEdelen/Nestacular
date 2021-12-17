@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Nestacular.NES2
 {
-    internal class BUS
+    public class BUS
     {
         byte[] RAM = new byte[64 * 1024];
 

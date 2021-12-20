@@ -12,9 +12,9 @@ namespace Nestacular.NES2
             _bus = bus;
         }
 
-        public void InsertCart()
+        public void InsertCart(string romFilepath)
         {
-            var fp = @"nestest.nes";
+            var fp = romFilepath;
             //open filestream
             FileStream fs = new FileStream(fp, FileMode.Open);
             int hexIn; //placeholder for each read byte
@@ -36,11 +36,13 @@ namespace Nestacular.NES2
                     var curByte = LoadedRom[0x10 + i];
                     _bus.Write((ushort)(0xC000 + i), curByte);
                 }
-                for (var i = 0; i < 0x2000; i++)
-                {
-                    var curByte = LoadedRom[0x10 + i];
-                    _bus.Write()
-                }
+
+                // CHR RAM, I think this is part of the VRAM.
+                //for (var i = 0; i < 0x2000; i++)
+                //{
+                //    var curByte = LoadedRom[0x10 + i];
+                //    _bus.Write((ushort)(0x);
+                //}
             }
 
             LoadRomIntoMemory(LoadedRom);

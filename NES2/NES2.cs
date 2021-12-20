@@ -23,10 +23,12 @@ namespace Nestacular.NES2
     {
         BUS _bus;
         //public CPU2 _CPU;
+        public CartLoader _cartLoader;
         public ulong masterClock = 0;
         public NES2()
         {
             _bus = new BUS();
+            _cartLoader = new CartLoader(_bus);
             //_CPU = new CPU2(_bus);
             
         }

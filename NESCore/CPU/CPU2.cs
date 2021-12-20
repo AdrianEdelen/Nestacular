@@ -128,12 +128,13 @@ You must have some sort of OS capable of doing these two steps in order to load 
 
         private void Startup()
         {
-
+            //TODO: find where the PC needs to be at on startup
+            //Set initial flag state
         }
 
         private void Shutdown()
         {
-
+            
         }
         private void Reset()
         {
@@ -154,9 +155,6 @@ You must have some sort of OS capable of doing these two steps in order to load 
             C = sum > 0xFF ? true : false; //set/clear the carry based on the result.
             V = (~(A ^ op) & (A ^ sum) & 0x80) != 0 ? true : false;
             A = (byte)sum;
-
-
-
         }
         void AND(byte op)
         {
@@ -216,7 +214,6 @@ You must have some sort of OS capable of doing these two steps in order to load 
         void BMI(byte op)
         {
             Branch(N);
-
         }
         void BNE(byte op)
         {

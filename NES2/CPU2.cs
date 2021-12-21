@@ -79,7 +79,7 @@ You must have some sort of OS capable of doing these two steps in order to load 
                 0x10 **
                 0x50 **
                 0x19 *
-
+                0xEB is actually USBC but the log files treat it as SBC
                 M is a method to create a new INSTR object, this is just to squeeze the size of the table a little smaller it is like a psuedo factory
                 we are assigning delegates for the opcodes and addressing modes for each of the possible 256 instructions available on the cpu
                 this is basically a giant list of object initialization formatted in a table to make finding the an opcode actually easier believe it or not.
@@ -116,8 +116,8 @@ You must have some sort of OS capable of doing these two steps in order to load 
 /*B0*/M("BCS",BCS,REL,7),M("LDA",LDA,YIN,7),M("JAM",JAM,IMP,0),M("LAX",LAX,YIN,7),M("LDY",LDY,XZP,7),M("LDA",LDA,XZP,7),M("LDX",LDX,YZP,7),M("LAX",LAX,YZP,7),M("CLV",CLV,IMP,7),M("LDA",LDA,YAB,7),M("TSX",TSX,IMP,7),M("LAS",LAS,YAB,7),M("LDY",LDY,XAB,7),M("LDA",LDA,XAB,7),M("LDX",LDX,YAB,7),M("LAX",LAX,YAB,7),
 /*C0*/M("CPY",CPY,IMM,7),M("CMP",CMP,XIN,7),M("NOP",NOP,IMM,7),M("DCP",DCP,XIN,7),M("CPY",CPY,ZPG,7),M("CMP",CMP,ZPG,7),M("DEC",DEC,ZPG,7),M("DCP",DCP,ZPG,7),M("INY",INY,IMP,7),M("CMP",CMP,IMM,7),M("DEX",DEX,IMP,7),M("SBX",SBX,IMM,7),M("CPY",CPY,ABS,7),M("CMP",CMP,ABS,7),M("DEC",DEC,ABS,7),M("DCP",DCP,ABS,7),
 /*D0*/M("BNE",BNE,REL,7),M("CMP",CMP,YIN,7),M("JAM",JAM,IMP,0),M("DCP",DCP,YIN,7),M("NOP",NOP,XZP,7),M("CMP",CMP,XZP,7),M("DEC",DEC,XZP,7),M("DCP",DCP,XZP,7),M("CLD",CLD,IMP,2),M("CMP",CMP,YAB,7),M("NOP",NOP,IMP,7),M("DCP",DCP,YAB,7),M("NOP",NOP,XAB,7),M("CMP",CMP,XAB,7),M("DEC",DEC,XAB,7),M("DCP",DCP,XAB,7),
-/*E0*/M("CPX",CPX,IMM,7),M("SBC",SBC,XIN,7),M("NOP",NOP,IMM,7),M("ISC",ISC,XIN,7),M("CPX",CPX,ZPG,7),M("SBC",SBC,ZPG,7),M("INC",INC,ZPG,7),M("ISC",ISC,ZPG,7),M("INX",INX,IMP,7),M("SBC",SBC,IMM,7),M("NOP",NOP,IMP,7),M("USB",USB,IMM,7),M("CPX",CPX,ABS,7),M("SBC",SBC,ABS,7),M("INC",INC,ABS,7),M("ISC",ISC,ABS,7),
-/*F0*/M("BEQ",BEQ,REL,7),M("SBC",SBC,YIN,7),M("JAM",JAM,IMP,0),M("ISC",ISC,YIN,7),M("NOP",NOP,XZP,7),M("SBC",SBC,XZP,7),M("INC",INC,XZP,7),M("ISC",ISC,XZP,7),M("SED",SED,IMP,7),M("SBC",SBC,YAB,7),M("NOP",NOP,IMP,7),M("ISC",ISC,YAB,7),M("NOP",NOP,XAB,7),M("SBC",SBC,XAB,7),M("INC",INC,XAB,7),M("ISC",ISC,XAB,7)
+/*E0*/M("CPX",CPX,IMM,7),M("SBC",SBC,XIN,7),M("NOP",NOP,IMM,7),M("ISB",ISC,XIN,7),M("CPX",CPX,ZPG,7),M("SBC",SBC,ZPG,7),M("INC",INC,ZPG,7),M("ISB",ISC,ZPG,7),M("INX",INX,IMP,7),M("SBC",SBC,IMM,7),M("NOP",NOP,IMP,7),M("SBC",SBC,IMM,7),M("CPX",CPX,ABS,7),M("SBC",SBC,ABS,7),M("INC",INC,ABS,7),M("ISB",ISC,ABS,7),
+/*F0*/M("BEQ",BEQ,REL,7),M("SBC",SBC,YIN,7),M("JAM",JAM,IMP,0),M("ISB",ISC,YIN,7),M("NOP",NOP,XZP,7),M("SBC",SBC,XZP,7),M("INC",INC,XZP,7),M("ISB",ISC,XZP,7),M("SED",SED,IMP,7),M("SBC",SBC,YAB,7),M("NOP",NOP,IMP,7),M("ISB",ISC,YAB,7),M("NOP",NOP,XAB,7),M("SBC",SBC,XAB,7),M("INC",INC,XAB,7),M("ISB",ISC,XAB,7)
             });
         }
 
@@ -197,8 +197,6 @@ You must have some sort of OS capable of doing these two steps in order to load 
         {
             var logByte1 = Read((ushort)(PC + 1)).ToString("X2");
             var logByte2 = Read((ushort)(PC + 2)).ToString("X2");
-
-
             _opCode = _bus.Read(PC); //get the byte of memory at the address of the PC
             internalClock += _opCodes[_opCode].Execute(); //Actually Execute the op
             switch (logBytes)
@@ -426,38 +424,27 @@ You must have some sort of OS capable of doing these two steps in order to load 
         }
         void DEC()
         {
-            //I think here we need to read off of the bus
-            //store in var
-            //decrement car
-            //write var back to bus in same location
-            
             fetchedByte--;
             Write(fetchedAddress, fetchedByte);
             SetZeroAndNegFlag(fetchedByte);
-
-
         }
         void DEX()
         {
             X--;
             SetZeroAndNegFlag(X);
-
         }
         void DEY()
         {
             Y--;
             SetZeroAndNegFlag(Y);
-
         }
         void EOR()
         {
             A ^= fetchedByte;
             AccumChanged();
-
         }
         void INC()
         {
-           
             fetchedByte++;
             Write(fetchedAddress, fetchedByte);
             SetZeroAndNegFlag(fetchedByte);
@@ -466,13 +453,11 @@ You must have some sort of OS capable of doing these two steps in order to load 
         {
             X++;
             SetZeroAndNegFlag(X);
-
         }
         void INY()
         {
             Y++;
             SetZeroAndNegFlag(Y);
-
         }
         void JMP()
         {
@@ -484,28 +469,22 @@ You must have some sort of OS capable of doing these two steps in order to load 
             var b = BitConverter.GetBytes((ushort)PC - 1);
             PushToStack(b[1]);
             PushToStack(b[0]);
-
             PC = fetchedAddress;
-
         }
         void LDA()
         {
             A = fetchedByte;
             AccumChanged();
-            //HACK: the accum changed doesn't actually trigger, it didn't change (but was accessed)
-
         }
         void LDX()
         {
             X = fetchedByte;
             SetZeroAndNegFlag(X);
-
         }
         void LDY()
         {
             Y = fetchedByte;
             SetZeroAndNegFlag(Y);
-
         }
         void LSR()
         {
@@ -521,12 +500,9 @@ You must have some sort of OS capable of doing these two steps in order to load 
             fetchedByte = (byte)(fetchedByte >> 1);
             SetZeroAndNegFlag(fetchedByte);
             Write(fetchedAddress, fetchedByte);
-
-
         }
         void NOP()
         {
-
         }
         void ORA()
         {
@@ -536,7 +512,6 @@ You must have some sort of OS capable of doing these two steps in order to load 
         void PHA()
         {
             PushToStack(A);
-
         }
         void PHP()
         {
@@ -566,8 +541,6 @@ You must have some sort of OS capable of doing these two steps in order to load 
                 }
             }
             PushToStack(range);
-
-
         }
         void PLA()
         {
@@ -585,8 +558,6 @@ You must have some sort of OS capable of doing these two steps in order to load 
             //Flags.nullFlag = (status & 32) != 0;
             V = (status & 64) != 0;
             N = (status & 128) != 0;
-
-
         }
         void ROL()
         {
@@ -640,11 +611,7 @@ You must have some sort of OS capable of doing these two steps in order to load 
                 fetchedByte = (byte)(fetchedByte >> 1); //shift the accum right 1
                 Write(fetchedAddress, (byte)(fetchedByte | bit7));
                 SetZeroAndNegFlag((byte)(fetchedByte | bit7));
-
-
             }
-
-
         }
         void RTI()
         {
@@ -740,7 +707,9 @@ You must have some sort of OS capable of doing these two steps in order to load 
         void SLO()
         {
             ASL();
-            A |= Read(PC);
+            A |= Read(fetchedAddress);
+            SetZeroAndNegFlag(A);
+
 
         }
         void ANC()
@@ -749,15 +718,20 @@ You must have some sort of OS capable of doing these two steps in order to load 
         }
         void RLA()
         {//TODO this is probably not going to work
+            //HACK: we need to acces the NEW fetched byte that was modified by the first part of the instruction
+            //so we read from the address again and overwrite the fetchedByte
             ROL();
+            fetchedByte = Read(fetchedAddress);
             AND();
+
 
         }
         void SRE()
         {//TODO: This also is probably not going to work
-            ROR();
+            LSR();
+            fetchedByte = Read(fetchedAddress);
             EOR();
-            SetZeroAndNegFlag(fetchedByte);
+            //SetZeroAndNegFlag(fetchedByte);
         }
         void ALR()
         {
@@ -766,6 +740,7 @@ You must have some sort of OS capable of doing these two steps in order to load 
         void RRA()
         {
             ROR();
+            fetchedByte = Read(fetchedAddress);
             ADC();
         }
         void ARR()
@@ -774,7 +749,7 @@ You must have some sort of OS capable of doing these two steps in order to load 
         }
         void SAX()
         {
-            Write(PC, (byte)(A & X));
+            Write(fetchedAddress, (byte)(A & X));
         }
         void TXA()
         {
@@ -795,15 +770,14 @@ You must have some sort of OS capable of doing these two steps in order to load 
         }
         void ISC()
         {
-            var a = Read(PC);
-            a++;
-            Write(fetchedAddress, a);
+            INC();
             SBC();
 
         }
         void USB()
         {
             SBC();
+            NOP();
         }
         void DCP()
         {
@@ -868,7 +842,6 @@ You must have some sort of OS capable of doing these two steps in order to load 
         }
         void YIN() //Y IND
         {
-            
             //Differing from x Indirect, the order is a little different and there
             //is a carry
             PC++;
@@ -878,7 +851,13 @@ You must have some sort of OS capable of doing these two steps in order to load 
             if (indexByte == 0xFF) b2++;
             ushort addr = 0x00;
             addr = (ushort)(b2 << 8 | b1);
-            if (Y == 0xFF)
+
+            if (Y == 0xFF && indexByte != 0xFF)
+            {
+                addr += 0x100;
+                addr--;
+            }
+            else if (Y == 0xFF && indexByte == 0xFF)
             {
                 addr--;
             }
@@ -921,9 +900,9 @@ You must have some sort of OS capable of doing these two steps in order to load 
         void XAB() //X Absolute
         {
             PC++;
-            byte PCH = Read(PC);
-            PC++;
             byte PCL = Read(PC);
+            PC++;
+            byte PCH = Read(PC);
             ushort addr = (ushort)(PCH << 8 | PCL);
             addr = (ushort)(addr + X);
             fetchedAddress = addr;
@@ -933,7 +912,6 @@ You must have some sort of OS capable of doing these two steps in order to load 
         }
         void YAB() //Y Absolute
         {
-            //if (PC == 0xDF60) Debugger.Break();
             PC++;
             byte PCL = Read(PC);
             PC++;
@@ -1005,7 +983,7 @@ You must have some sort of OS capable of doing these two steps in order to load 
         }
         void ZPG() //Zero Page
         {
-            if (PC == 0xDC24) Debugger.Break();
+            
             PC++;
             fetchedAddress = Read(PC);
             fetchedByte = Read(fetchedAddress);
@@ -1015,7 +993,7 @@ You must have some sort of OS capable of doing these two steps in order to load 
         }
         void XZP() //X Zero Page
         {
-            if (PC == 0xDBCD) Debugger.Break();
+            
             PC++;
             var tempAddr = Read(PC);
             fetchedAddress = (byte)(tempAddr + X);
@@ -1026,8 +1004,9 @@ You must have some sort of OS capable of doing these two steps in order to load 
         void YZP() //Y Zero Page
         {
             PC++;
-            fetchedAddress = Read(PC);
-            fetchedByte = Read((byte)(fetchedAddress + Y));
+            var tempAddr = Read(PC);
+            fetchedAddress = (byte)(tempAddr + Y);
+            fetchedByte = Read(fetchedAddress);
             PC++;
             logBytes = 1;
         }

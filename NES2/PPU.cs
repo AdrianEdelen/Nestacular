@@ -9,13 +9,32 @@
 internal class PPU
 {
     Bus _bus;
+    //TODO: PPU RAM
+    //TODO: CHR ROM
+    //TODO: Add / Emulate Registers
+    //TODO: NMI Interrupt
+    
+    //each register is just a byte in memory (i think this is the same memory as the general RAM)
+    //therefore implementation of each register is just reading//writing to that byte in memory
+    //it seems like the way data is transferred between the cpu and the PPU is by the CPU writing to these shared memory locations
+    //the CPU writes to these, and the PPU reads them into its memory
+    byte PPUCTRL {
+        get
+        {
+            _bus.Read(0x2000);
+        }
+        set 
+        {
+            _bus.Write(0x2000));
+        }
+    }
 
     public PPU(Bus bus) 
     {
         _bus = bus;
 
     }
-
+    //need to implement register mirroring
     private void Test()
     {
         _bus.Read();

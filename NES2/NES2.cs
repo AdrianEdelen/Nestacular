@@ -52,6 +52,8 @@ namespace Nestacular.NES2
             //so if the host takes 3 ticks to process, we should only NOP for 2.
             masterClock ++;
             var logString = _CPU.StepTo(masterClock);
+            //_PPU.StepTo(); this should return whatever a cycle of the ppu returns, (a pixel, scanline, or full image)
+            //whatever else needs to be stepped to
             NOP(0.000000558659217877095, sw.ElapsedTicks);
             return logString;
         }
@@ -60,11 +62,7 @@ namespace Nestacular.NES2
         {
             var durationTicks = Math.Round(durationSeconds * Stopwatch.Frequency) - alreadyElapsed;;
             var sw = Stopwatch.StartNew();
-            
-            while (sw.ElapsedTicks < durationTicks)
-            {
-
-            }
+            while (sw.ElapsedTicks < durationTicks) { }
         }
         
     }

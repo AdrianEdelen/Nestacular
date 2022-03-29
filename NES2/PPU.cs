@@ -9,7 +9,11 @@
 internal class PPU
 {
     Bus _bus;
-    int _cycles
+    int _cycles;
+    byte[] _CHRRom = new byte[0x2000];
+    byte[] _palleteTable = new byte[0x100];
+    bool _writeAccess = false;
+    bool _readAccess = false
     //TODO: PPU RAM
     //TODO: CHR ROM
     //TODO: Add / Emulate Registers
@@ -19,17 +23,120 @@ internal class PPU
     //therefore implementation of each register is just reading//writing to that byte in memory
     //it seems like the way data is transferred between the cpu and the PPU is by the CPU writing to these shared memory locations
     //the CPU writes to these, and the PPU reads them into its memory
-    byte PPUCTRL {
+    byte PPUCTRL 
+    {
         get
         {
-            _bus.Read(0x2000);
+            if (_readAccess)
+            {
+                _bus.Read(0x2000);
+            }
             
             
         }
         set 
         {
-            _bus.Write(0x2000, value));
-            MirrorRegisterValue(0x2000);
+            if (_writeAccess)
+            {
+                _bus.Write(0x2000, value));
+                MirrorRegisterValue(0x2000);
+            }
+        }
+    }
+    byte PPUMASK
+    {
+        get
+        {
+            _bus.Read(0x2001);
+        }
+        set
+        {
+            _bus.Write(0x2001, value));
+            MirrorRegisterValue(0x2001);
+        }
+    }
+    byte PPUSTATUS
+    {
+        get
+        {
+            _bus.Read(0x2002);
+        }
+        set
+        {
+            _bus.Write(0x2002, value));
+            MirrorRegisterValue(0x2002);
+        }
+    }
+    byte PPUOAMADDRESS
+    {
+        get
+        {
+            _bus.Read(0x2003);
+        }
+        set
+        {
+            _bus.Write(0x2003, value));
+            MirrorRegisterValue(0x2003);
+        }
+    }
+    byte PPUOAMDATA
+    {
+        get
+        {
+            _bus.Read(0x2004);
+        }
+        set
+        {
+            _bus.Write(0x2004, value));
+            MirrorRegisterValue(0x2004);
+        }
+    }
+    byte PPUSCROLL
+    {
+        get
+        {
+            _bus.Read(0x2005);
+        }
+        set
+        {
+            _bus.Write(0x2005, value));
+            MirrorRegisterValue(0x2005);
+        }
+    }
+    byte PPUADDRESS
+    {
+        get
+        {
+            _bus.Read(0x2006);
+        }
+        set
+        {
+            _bus.Write(0x2006, value));
+            MirrorRegisterValue(0x2006);
+        }
+    }
+    byte PPUDATA
+    {
+        get
+        {
+            _bus.Read(0x2007);
+        }
+        set
+        {
+            _bus.Write(0x2007, value));
+            MirrorRegisterValue(0x2007);
+        }
+    }
+    byte PPUOAMDMA
+    {
+        get
+        {
+            _bus.Read(0x4014);
+        }
+        set
+        {
+            _bus.Write(0x4014, value));
+            MirrorRegisterValue(0x4014);
         }
     }
 
@@ -80,6 +187,10 @@ internal class PPU
             if (i == 240)
             {
                 NMIInterrupt();
+            }
+            if (i >= 240 && i <= 262)
+            {
+                _writeAccess = false
             }
             RenderScanLine()
             

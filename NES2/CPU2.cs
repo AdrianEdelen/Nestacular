@@ -135,7 +135,9 @@ You must have some sort of OS capable of doing these two steps in order to load 
             //then we will spit out the dissasembler info also
             if (masterClockCycles > internalClock)
             {
-                
+                if ()
+
+
                 _sb.Append($"{PC:X4}  ");
                 _sb.Append($"{Read(PC):X2} ");
 

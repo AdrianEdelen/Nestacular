@@ -9,6 +9,7 @@
 internal class PPU
 {
     Bus _bus;
+    int _cycles
     //TODO: PPU RAM
     //TODO: CHR ROM
     //TODO: Add / Emulate Registers
@@ -22,10 +23,13 @@ internal class PPU
         get
         {
             _bus.Read(0x2000);
+            
+            
         }
         set 
         {
-            _bus.Write(0x2000));
+            _bus.Write(0x2000, value));
+            MirrorRegisterValue(0x2000);
         }
     }
 
@@ -34,11 +38,56 @@ internal class PPU
         _bus = bus;
 
     }
+
+    public void StepTo(ulong masterClockCycles)
+    {
+        //TODO: what is the logic for calculating PPU cycles vs the master clock
+        //
+        if (masterClockCycles > _cycles)
+        {
+
+        }
+    }
+
     //need to implement register mirroring
+    private void MirrorRegisterValue(short location)
+    {
+        //this should write the same value to the register every 8 bytes
+        var val = _bus.Read(location);
+        for (int i = location; i <= 0x3FFFF; 1 += 8)
+        {
+            _bus.Write(i, val);
+        }
+    }
+
     private void Test()
     {
+        var b1 = 0b0000001;
         _bus.Read();
     }
 
+    private void RenderScanLine() 
+    { //render an individual scan line
 
+        cycles += 341;
+    }
+
+    private void RenderFrame()
+    {
+        //render 262 scan lines
+        for (i = 0; i < 262; i++)
+        {
+            if (i == 240)
+            {
+                NMIInterrupt();
+            }
+            RenderScanLine()
+            
+        }
+    }
+
+    private void NMIInterrupt() 
+    {
+
+    }
 }

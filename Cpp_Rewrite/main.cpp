@@ -9,5 +9,5 @@ int main() {
     BUS bus;
 
     bus.Write(0x0001, 0x01);
-
+    
 }

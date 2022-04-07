@@ -54,7 +54,7 @@ namespace NES
         void Reset();
 
         //opcodes
-
+        void JAM();
 
 
         

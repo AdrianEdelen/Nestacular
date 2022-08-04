@@ -1,2 +1,2 @@
-﻿using var game = new Nestacular.Game1();
+﻿using var game = new Nestacular.GUI();
 game.Run();

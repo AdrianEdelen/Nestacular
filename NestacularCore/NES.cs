@@ -9,6 +9,7 @@ using Nestacular.NESCore.CPUCore;
 using Nestacular.NESCore.BusCore;
 using Nestacular.NESCore.CartCore;
 using Nestacular.NESCore.PPUCore;
+using Nestacular.NESCore.CPUCore.CPUStatus;
 
 namespace Nestacular.NESCore
 {

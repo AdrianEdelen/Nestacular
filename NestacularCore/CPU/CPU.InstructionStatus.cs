@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nestacular.NESCore.CPUCore
+namespace Nestacular.NESCore.CPUCore.CPUStatus
 {
     public struct InstructionStatus
     {

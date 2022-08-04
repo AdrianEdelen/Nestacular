@@ -10,9 +10,9 @@ using System.IO;
 using System.Collections.Generic;
 using SkiaSharp;
 
-namespace NestacularFrontend
+namespace Nestacular
 {
-    public class Game1 : Game
+    public class GUI : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -28,7 +28,7 @@ namespace NestacularFrontend
         //private GameWindow outputWindow;
 
         private string _cpuStatus;
-        public Game1()
+        public GUI()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -37,7 +37,7 @@ namespace NestacularFrontend
 
         protected override void Initialize()
         {
-            _nes.Cart.Insert("nestest.nes");
+            _nes.Cart.Insert("Resources/nestest.nes");
             _nes.RunEngine(true);
 
             base.Initialize();

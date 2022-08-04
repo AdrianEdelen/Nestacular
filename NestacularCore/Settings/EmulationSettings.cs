@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nestacular.NES.Settings
+namespace Nestacular.NESCore.SettingsCore
 {
     internal static class EmulationSettings
     {

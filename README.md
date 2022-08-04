@@ -44,3 +44,5 @@ I expect hardware requirements to increase, ram usage to be high, multi core CPU
 The Emulator can be paused by pressing space, and the execution mode can be changed by pressing down, stepping through frames/instructions, can be done with the right arrow depending on execution.
 
 Overall though, this is just fun for me
+
+Additionally I intend to write this in C# since I am familiar with it, and possibly move it to a lower level language. I think it would be very cool to get it to run on bare metal or as a VM.

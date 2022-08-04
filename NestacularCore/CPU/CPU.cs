@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Nestacular.NESCore.BusCore;
+using Nestacular.NESCore.CPUCore.Status;
 namespace Nestacular.NESCore.CPUCore
 {
     internal partial class CPU

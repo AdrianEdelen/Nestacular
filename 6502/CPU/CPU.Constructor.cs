@@ -1,10 +1,10 @@
-﻿namespace Nestacular.NESCore.CPUCore;
-using Nestacular.NESCore.BusCore;
-
-internal partial class CPU
+﻿using EmulatorTools.Memory;
+namespace SixtyFiveOhTwo.CPUCore;
+public partial class CPU
 {
-    public CPU(BUS bus)
+    public CPU(IMemory bus, bool BCDEnabled)
     {
+        _BCDEnabled = BCDEnabled;
         _bus = bus;
         //Beware those who enter for this is a beast
         static Instruction M(string name, Action op, Action addr, int cycles) { return new Instruction(name, op, addr, cycles); }

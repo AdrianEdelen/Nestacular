@@ -7,7 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
     <PackageReference Include="SkiaSharp" Version="2.88.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\6502\6502.csproj" />
+    <ProjectReference Include="..\EmulatorTools\EmulatorTools.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Nestacular.NESCore.CPUCore
-{
-    internal partial class CPU
+﻿namespace SixtyFiveOhTwo.CPUCore;
+    public partial class CPU
     {
         //These Read and Write methods are just wrappers for legibility throughout the opCodes.
         private byte Read(ushort location)
@@ -59,4 +52,3 @@ namespace Nestacular.NESCore.CPUCore
             if ((A & 128) != 0) N = true; else N = false;
         }
     }
-}

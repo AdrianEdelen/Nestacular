@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Nestacular.NESCore.BusCore;
 using SkiaSharp;
+using Microsoft.Xna.Framework;
 
 namespace Nestacular.NESCore.PPUCore;
 
@@ -59,21 +60,24 @@ public class PPU
 
     private int currentPixel;
     private int currentScanLine;
-    private SkiaSharp.SKColor renderColor;
+    private Color renderColor;
 
     //The PPU renders 262 scanlines per frame.Each scanline lasts for 341 PPU clock cycles(113.667 CPU clock cycles; 1 CPU cycle = 3 PPU cycles),
     //with each clock cycle producing one pixel.The line numbers given here correspond to how the internal PPU frame counters count lines.
-    public Pixel? SingleStep()
+    public Color? SingleStep()
     {
+
         doRender = false;
         Clock();
-        //PerformScanlineStep();
         cycles++;
         if (doRender)
         {
-            return new Pixel(currentScanLine, currentPixel, renderColor);
+            return renderColor;
+            //return new Pixel(currentScanLine, currentPixel, renderColor);
         }
         else return null;
+
+
     }
 
     void PerformCycleTask()
@@ -129,21 +133,23 @@ public class PPU
 
 
     }
-    void LineZero(int px) {
+    void LineZero(int px)
+    {
         switch (px)
         {
             case 0:
                 SkippedOnBGODD();
                 break;
-            case 1 or 2: 
+            case 1 or 2:
                 NTByte();
                 break;
 
         }
     }
-    void VisibleScanLine(int px) 
+    void VisibleScanLine(int px)
     {
-        renderColor =  GenerateRandomColor();
+        renderColor = GetBlackOrWhite();
+        //renderColor =  GenerateRandomColor();
     }
     void PostRenderLine(int px) { }
     void SetVblankLine(int px) { }
@@ -187,17 +193,23 @@ public class PPU
         return false;
     }
 
-     SKColor GenerateRandomColor()
+    SKColor GenerateRandomColor()
     {
         SkiaSharp.SKColors colors = new SkiaSharp.SKColors();
         var t = typeof(SkiaSharp.SKColors).GetFields(); // get all fields
-
         Random r = new Random();
         int rInt = r.Next(0, t.Length); // create a random number in range of property count
-
         var res = colors.GetType().GetField(t[rInt].Name); // get random property name
+        return (SkiaSharp.SKColor)res.GetValue(colors);
+    }
 
-        return (SkiaSharp.SKColor) res.GetValue(colors);
+    bool isBlack = false;
+
+    Color GetBlackOrWhite()
+    {
+        isBlack = !isBlack;
+        if (isBlack) return Color.Black;
+        else return Color.White;
     }
 
 

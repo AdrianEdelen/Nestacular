@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Nestacular.NESCore;
 using System;
-using Nestacular.NESCore.CPUCore;
 using NestacularFrontend.Input;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 using System.Text;
@@ -68,19 +67,9 @@ namespace Nestacular
             _frame = _nes.FrameBuffer;
             if (_frame != null)
             {
-                //AGH
                 frameCount++;
-                var bmp = _frame.GetFrame();
-
-                outputTexture = new Texture2D(GraphicsDevice, 256, 240);
-                var pixelData = _frame.GetPixelData();
-                outputTexture.SetData(0, 0, null, pixelData, 0, pixelData.Length);
-                //
-
-
+                outputTexture = CreateTexture(GraphicsDevice, Frame.Width, Frame.Height, _frame.colorArr);
             }
-
-
             else //frame is not ready, either it is stuck, or the framerate is too high and it hasn't loaded another frame yet.
                 lagFrames++;
 
@@ -144,10 +133,11 @@ namespace Nestacular
                 prevFrameCalc = _frame.CalcTime;
             }
             _spriteBatch.DrawString(font, $"Emulation Frame Calc Time (MS): {prevFrameCalc}", new Vector2(400, 120), Color.Black);
+            //_spriteBatch.DrawString(font, $"frame Lag Time: {prevFrameCalc - }", new Vector2(400, 140), Color.Black);
 
-            _spriteBatch.DrawString(font, $"Output: ", new Vector2(400, 140), Color.Black);
+            _spriteBatch.DrawString(font, $"Output: ", new Vector2(400, 160), Color.Black);
             if (outputTexture != null)
-                _spriteBatch.Draw(outputTexture, new Vector2(400, 160), Color.Black);
+                _spriteBatch.Draw(outputTexture, new Rectangle(400, 180, Frame.Width, Frame.Height), Color.White);            
 
 
 
@@ -157,6 +147,30 @@ namespace Nestacular
             base.Draw(gameTime);
         }
 
+        public static Texture2D CreateTexture(GraphicsDevice device, int width, int height, Color[] colors)
+        {
+            Texture2D texture = new Texture2D(device, width, height);
+            texture.SetData(colors);
+            return texture;
+        }
+        public static Texture2D CreateTexture(GraphicsDevice device, int width, int height, Func<int, Color> paint)
+        {
+            //initialize a texture
+            Texture2D texture = new Texture2D(device, width, height);
+
+            //the array holds the color for each pixel in the texture
+            Color[] data = new Color[width * height];
+            for (int pixel = 0; pixel < data.Length; pixel++)
+            {
+                //the function applies the color according to the specified pixel
+                data[pixel] = paint(pixel);
+            }
+
+            //set the color
+            texture.SetData(data);
+
+            return texture;
+        }
 
 
     }

@@ -1,6 +1,7 @@
-﻿namespace SixtyFiveOhTwo.CPUCore;
+﻿namespace SixtyFiveOhTwo;
 public partial class CPU
-{
+{ 
+    //The goal is to get rid of these, either with docs or with better annotated code.
     #region CPU
     /* 
        Names of variables match the documented names of the components
@@ -47,36 +48,6 @@ public partial class CPU
 
         //*****THE ORDER OF THIS LIST IS CRITICAL, IF THE ORDER IS CHANGED THE PC WILL FIND THE WRONG OPCODE******
         There are 256 total opcodes, some are legal some are not. a lot of them just halt the CPU, but hey, if the programmer wants to halt the cpu she can.
-    */
-    #endregion
-    #region Helpers
-    /*
-
-    */
-    #endregion
-    #region Instruction
-    /*
-
-    */
-    #endregion
-    #region Instructions
-    /*
-
-    */
-    #endregion
-    #region InstructionStatus
-    /*
-
-    */
-    #endregion
-    #region Registers
-    /*
-
-    */
-    #endregion
-    #region CPUStatus
-    /*
-
     */
     #endregion
 }

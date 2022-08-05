@@ -1,7 +1,7 @@
-﻿namespace SixtyFiveOhTwo.CPUCore;
+﻿namespace SixtyFiveOhTwo;
 public partial class CPU
 {
-    private ushort PC = 0x0000; //Program Counter
+    //private ushort PC = 0x0000; //Program Counter
     private byte SP = 0xFD; //Stack Pointer
     private byte A = 0x00; //Accumulator
     private byte X = 0x00; //X Register

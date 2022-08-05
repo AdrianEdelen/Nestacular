@@ -1,4 +1,4 @@
-﻿namespace SixtyFiveOhTwo.CPUCore;
+﻿namespace SixtyFiveOhTwo.Status;
 public struct InstructionStatus
 {
     internal readonly ushort Address;

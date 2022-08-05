@@ -1,6 +1,5 @@
-﻿namespace SixtyFiveOhTwo.CPUCore;
-
-public class Instruction
+﻿namespace SixtyFiveOhTwo;
+internal class Instruction
 {
     private delegate void OpDel();
     private delegate void AddrMode();

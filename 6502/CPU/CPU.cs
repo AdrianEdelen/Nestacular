@@ -1,8 +1,14 @@
 ﻿using EmulatorTools.Memory;
-using SixtyFiveOhTwo.CPUCore.Status;
-namespace SixtyFiveOhTwo.CPUCore;
+using SixtyFiveOhTwo.Registers;
+using SixtyFiveOhTwo.Status;
+namespace SixtyFiveOhTwo;
 public partial class CPU
 {
+    private ushort pc { get => ProgramCounter.Get(); set => ProgramCounter.set(); }
+
+
+
+
     IMemory _bus;
     private bool _BCDEnabled;
     //Internal Flags and helper variables
@@ -16,7 +22,7 @@ public partial class CPU
     public ulong Cycles { get; private set; }
     private static List<Instruction> _opCodes = new List<Instruction>();
 
-    public CPUStatus Status { get; private set; }
+    public Status.Status Status { get; private set; }
     public InstructionStatus InstructionStatus { get; private set; }
 
     public void StepCPU()
@@ -28,7 +34,6 @@ public partial class CPU
         AccumMode = false;
     }
 
-
     public void Clock()
     {
         _opCode = _bus.Read(PC); //get the byte of memory at the address of the PC
@@ -37,7 +42,7 @@ public partial class CPU
     }
     internal void UpdateStatus()
     {
-        Status = new CPUStatus(PC, SP, A, X, Y, CreateStatusByte(), C, Z, I, D, B, V, N, _isHalted, AccumMode, fetchedByte, fetchedAddress, Cycles);
+        Status = new Status.Status(PC, SP, A, X, Y, CreateStatusByte(), C, Z, I, D, B, V, N, _isHalted, AccumMode, fetchedByte, fetchedAddress, Cycles);
     }
     internal void updateInstructionStatus()
     {

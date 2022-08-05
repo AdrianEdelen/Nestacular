@@ -1,7 +1,7 @@
-﻿namespace SixtyFiveOhTwo.CPUCore.Status;
-public struct CPUStatus
+﻿namespace SixtyFiveOhTwo.Status;
+public struct Status
 {
-    internal CPUStatus(ushort pc, byte sp, byte a, byte x, byte y, byte p, bool c, bool z, bool i, bool d, bool b, bool v, bool n,
+    internal Status(ushort pc, byte sp, byte a, byte x, byte y, byte p, bool c, bool z, bool i, bool d, bool b, bool v, bool n,
         bool isHalted, bool accumMode, byte fetchedByte, ushort fetchedAddress, UInt64 internalClock)
     {
         ProgramCounter = pc;
@@ -42,7 +42,6 @@ public struct CPUStatus
     internal readonly byte FetchedByte;
     internal readonly ushort FetchedAddress;
     internal readonly UInt64 InternalClock;
-
     public override string ToString()
     {
         return @$"Program Counter:        {ProgramCounter:X4}

@@ -1,4 +1,4 @@
-﻿namespace SixtyFiveOhTwo.CPUCore;
+﻿namespace SixtyFiveOhTwo;
 public partial class CPU
 {
     void JAM() { _isHalted = true; }

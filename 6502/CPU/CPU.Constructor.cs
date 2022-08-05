@@ -1,10 +1,15 @@
 ﻿using EmulatorTools.Memory;
-namespace SixtyFiveOhTwo.CPUCore;
+using SixtyFiveOhTwo.Registers;
+
+namespace SixtyFiveOhTwo;
 public partial class CPU
 {
     public CPU(IMemory bus, bool BCDEnabled)
     {
-        _BCDEnabled = BCDEnabled;
+        
+
+
+    _BCDEnabled = BCDEnabled;
         _bus = bus;
         //Beware those who enter for this is a beast
         static Instruction M(string name, Action op, Action addr, int cycles) { return new Instruction(name, op, addr, cycles); }

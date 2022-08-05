@@ -4,10 +4,10 @@ using SixtyFiveOhTwo.Status;
 namespace SixtyFiveOhTwo;
 public partial class CPU
 {
-    private ushort pc { get => ProgramCounter.Get(); set => ProgramCounter.set(); }
+    private ushort PC { get => ProgramCounter.Get(); set => ProgramCounter.Set(value); }
 
 
-
+    
 
     IMemory _bus;
     private bool _BCDEnabled;

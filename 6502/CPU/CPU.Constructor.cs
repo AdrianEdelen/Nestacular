@@ -6,7 +6,6 @@ public partial class CPU
 {
     public CPU(IMemory bus, bool BCDEnabled)
     {
-        
 
 
     _BCDEnabled = BCDEnabled;

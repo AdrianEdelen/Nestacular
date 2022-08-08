@@ -2,7 +2,7 @@
 public struct Status
 {
     internal Status(ushort pc, byte sp, byte a, byte x, byte y, byte p, bool c, bool z, bool i, bool d, bool b, bool v, bool n,
-        bool isHalted, bool accumMode, byte fetchedByte, ushort fetchedAddress, UInt64 internalClock)
+        bool accumMode, byte fetchedByte, ushort fetchedAddress, UInt64 internalClock)
     {
         ProgramCounter = pc;
         StackPointer = sp;
@@ -17,7 +17,6 @@ public struct Status
         BreakCommandFlag = b;
         OverflowFlag = v;
         NegativeFlag = n;
-        IsHalted = isHalted;
         AccumMode = accumMode;
         FetchedByte = fetchedByte;
         FetchedAddress = fetchedAddress;
@@ -37,7 +36,6 @@ public struct Status
     internal readonly bool BreakCommandFlag;
     internal readonly bool OverflowFlag;
     internal readonly bool NegativeFlag;
-    internal readonly bool IsHalted;
     internal readonly bool AccumMode;
     internal readonly byte FetchedByte;
     internal readonly ushort FetchedAddress;
@@ -57,7 +55,6 @@ Decimal Mode Flag:      {DecimalModeFlag}
 Break Command Flag:     {BreakCommandFlag}
 Overflow Flag:          {OverflowFlag}
 Negative Flag:          {NegativeFlag}
-Is Halted:              {IsHalted}
 Accumulator Mode:       {AccumMode}
 Current Fetched Byte:   {FetchedByte:X2}
 Current Fetched Address:{FetchedAddress:X4}

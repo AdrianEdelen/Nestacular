@@ -45,9 +45,6 @@ public partial class CPU
         Additionally you can ctrl+F and search for a 3 character opcode mnemonic e.g. ADC and see everywhere in the table that opcode is referenced.
         to search the table as a computer, just index based off of the read byte in memory, the table is formatted so that the index lines up with the hex opcode value
         eg opcode 0x00 == _opcodes[0] and opcode 0xFF == _opcodes[255]
-
-        //*****THE ORDER OF THIS LIST IS CRITICAL, IF THE ORDER IS CHANGED THE PC WILL FIND THE WRONG OPCODE******
-        There are 256 total opcodes, some are legal some are not. a lot of them just halt the CPU, but hey, if the programmer wants to halt the cpu she can.
     */
     #endregion
 }

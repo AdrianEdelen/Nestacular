@@ -1,31 +1,28 @@
 ﻿namespace SixtyFiveOhTwo;
 internal class Instruction
 {
-    private delegate void OpDel();
-    private delegate void AddrMode();
+    private delegate int OpDel();
+    private delegate int AddrMode();
     private string _name;
 
-    private int _clockCycles;
-    private int _additionalClockCycles;
     OpDel _opDel;
     AddrMode _addrMode;
-    public Instruction(string name, Action op, Action addrMode, int clockCycles)
+    public Instruction(string name, Func<int> op, Func<int> addrMode)
     {
         _name = name;
-        _clockCycles = clockCycles;
         _opDel = new OpDel(op);
         _addrMode = new AddrMode(addrMode);
     }
     public ulong Execute()
     {
-        _addrMode.Invoke();
-        _opDel.Invoke();
-        return (ulong)(_clockCycles + _additionalClockCycles);
+        var additionalClockCycles = _addrMode.Invoke();
+        var clockCycles = _opDel.Invoke();
+        return (ulong)(clockCycles + additionalClockCycles);
     }
     public override string ToString()
     {
-        //return $@"{_name} : {_clockCycles} | {_addrMode}";
-        return $@"{_name} : {_clockCycles} | ";
+        //TODO: TODO
+        return $"";
     }
 }
 

@@ -64,7 +64,7 @@ public class PPU
 
     //The PPU renders 262 scanlines per frame.Each scanline lasts for 341 PPU clock cycles(113.667 CPU clock cycles; 1 CPU cycle = 3 PPU cycles),
     //with each clock cycle producing one pixel.The line numbers given here correspond to how the internal PPU frame counters count lines.
-    public Color? SingleStep()
+    public Color? Step(ulong masterClock)
     {
 
         doRender = false;

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EmulatorTools;
-internal interface ICPU
+﻿namespace EmulatorTools.CPU;
+public interface ICPU
 {
+    public void Startup();
+    public void Shutdown();
+    public void Reset();
 }

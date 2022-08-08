@@ -43,7 +43,7 @@ public class NES
     private CPU _CPU;
     public Cartridge Cart;
 
-    public ulong masterClock = 0;
+    public ulong MasterClock { get; private set; }
     private bool _exiting = false;
     private bool _cpuLock = false;
     private Stopwatch _calcTimer = new Stopwatch();
@@ -71,6 +71,7 @@ public class NES
         _CPU = new CPU(_bus, false);
         _PPU = new PPU(_bus);
         Cart = new Cartridge(_bus);
+        MasterClock = 0;
 
     }
 
@@ -110,23 +111,23 @@ public class NES
         //Method3(count);
         //easiest way to do this is modulo and a loop
         var nextFrame = new Frame();
-        var clock = 0;
+        var frameClock = 0;
         var ppuClock = 0;
         var cpuClock = 0;
         if (CurrentExecutionMode == ExecutionMode.FrameStep) ExecutionBlocker.WaitOne();
-        while (clock < 89342)
+        while (frameClock < 89342)
         {
             if (CurrentExecutionMode == ExecutionMode.PpuStep) ExecutionBlocker.WaitOne();
-            var color = _PPU.SingleStep();
+            var color = _PPU.Step(MasterClock);
             if (color != null)
                 nextFrame.AddRandomColor();
             //nextFrame.AddColor((Color)color);
             ppuClock++;
-            if (clock % 3 == 0)
+            if (frameClock % 3 == 0)
             {
                 //every third time
                 if (CurrentExecutionMode == ExecutionMode.CpuStep || CurrentExecutionMode == ExecutionMode.PpuStep) ExecutionBlocker.WaitOne();
-                _CPU.StepCPU();
+                _CPU.Step(MasterClock);
                 InstructionHistory.Insert(0, InstructionStatus);
                 if (InstructionHistory.Count > 15)
                 {
@@ -134,7 +135,7 @@ public class NES
                 }
                 cpuClock++;
             }
-            clock++;
+            frameClock++;
         }
 
         FrameFlushed = false;
@@ -144,6 +145,7 @@ public class NES
         nextFrame.CalcTime = _calcTimer.ElapsedMilliseconds;
         FrameBuffer = nextFrame;
         FrameReady = true;
+        MasterClock++;
     }
 
     public void RunEngine(bool startState = false)

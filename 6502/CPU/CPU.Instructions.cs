@@ -2,10 +2,9 @@
 namespace SixtyFiveOhTwo;
 public partial class CPU
 {
-    #region Complex Instructions (can we improve them?)
+    #region current Fully Functioning instructions
     int ADC()
     {
-        var clockCycles = 0;
         // As The Prodigy once said: This is dangerous.
         //stop it patrick you're scaring him ^~&|^&~&^|()(|&^)
         var carry = _carryFlag ? 1 : 0; //is the carry flag set
@@ -14,12 +13,29 @@ public partial class CPU
         _overflowFlag = (~(A ^ fetchedByte) & (A ^ sum) & 0x80) != 0 ? true : false; //what the fuck
         A = (byte)sum;
         AccumChanged();
-        return clockCycles;
+        return AddClockCyclesStandard();
     }
+    int AND()
+    {
+        A = (byte)(A & fetchedByte);
+        SetZeroAndNegFlag(A);
+        return AddClockCyclesStandard();
+    }
+
+    #region in work
+
+    #endregion
+
+
+
+
+
+    #region Complex Instructions (can we improve them?)
+
+
     int ASL()
     {
-        var clockCycles = 0;
-        if (AccumMode)
+        if (_currentAddressMode = AddressingModes.Implied)
         {
             if ((A & 128) != 0) _carryFlag = true;
             else _carryFlag = false;
@@ -34,7 +50,10 @@ public partial class CPU
             Write(fetchedAddress, fetchedByte); //TODO: how to write to memory, i think this is wrong
             SetZeroAndNegFlag(fetchedByte);
         }
-        return clockCycles;
+        return _currentAddressMode switch
+        {
+            AddressingModes.Implied => 
+        };
     }
     int BIT()
     {
@@ -327,7 +346,7 @@ public partial class CPU
     int CLC() { var clockCycles = 0; _carryFlag = false; return clockCycles; }
     int CLI() { var clockCycles = 0; _decimalModeFlag = false; return clockCycles; }
     int CLV() { var clockCycles = 0; _overflowFlag = false; return clockCycles; }
-    int AND() { var clockCycles = 0; A = (byte)(A & fetchedByte); SetZeroAndNegFlag(A); return clockCycles; }
+   
     int BCC() { var clockCycles = 0; Branch(!_carryFlag); return clockCycles; }
     int BCS() { var clockCycles = 0; Branch(_carryFlag); return clockCycles; }
     int BEQ() { var clockCycles = 0; Branch(_zeroFlag); return clockCycles; }
@@ -362,4 +381,27 @@ public partial class CPU
     int LAS() { throw new NotImplementedException(); }
 
     #endregion
+
+
+    private int AddClockCyclesStandard()
+    {
+        var retVal = CheckPageCross();
+        return retVal += _currentAddressMode switch
+        {
+            AddressingModes.Immediate => 2,
+            AddressingModes.ZeroPage => 3,
+            AddressingModes.XZeroPage => 4,
+            AddressingModes.Absolute => 4,
+            AddressingModes.XAbsolute => 4,
+            AddressingModes.YAbsolute => 4,
+            AddressingModes.XIndirect => 6,
+            AddressingModes.YIndirect => 5,
+            _ => throw new InvalidAddressingModeException()
+        };
+    }
+    private int CheckPageCross()
+    {
+        //TODO: Implement this
+        return 0;
+    }
 }

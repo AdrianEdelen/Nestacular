@@ -83,6 +83,7 @@ public partial class CPU : ICPU
             //reset the temp flags
             AccumMode = false;
             _crossedPage = false;
+            _currentAddressMode = AddressingModes.Undefined;
         }
         return InternalClock;
     }

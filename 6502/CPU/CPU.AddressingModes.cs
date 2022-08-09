@@ -6,12 +6,30 @@ using System.Threading.Tasks;
 namespace SixtyFiveOhTwo;
 public partial class CPU
 {
+    private enum AddressingModes
+    {
+        Immediate,
+        XIndirect,
+        YIndirect,
+        Absolute,
+        XAbsolute,
+        YAbsolute,
+        Implied,
+        Indirect,
+        Relative,
+        ZeroPage,
+        XZeroPage,
+        YZeroPage,
+        Undefined
+    }
+    private AddressingModes _currentAddressMode = AddressingModes.Undefined;
     private int IMM() //Immediate
     {
         PC++;
         fetchedAddress = PC;
         fetchedByte = Read(PC);
         PC++;
+        _currentAddressMode = AddressingModes.Immediate;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int XIN() //X IND
@@ -27,6 +45,7 @@ public partial class CPU
         fetchedAddress = addr;
         fetchedByte = Read(addr);
         PC++;
+        _currentAddressMode = AddressingModes.XIndirect;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int YIN() //Y IND
@@ -51,6 +70,7 @@ public partial class CPU
         fetchedAddress = addr;
         fetchedByte = Read(addr);
         PC++;
+        _currentAddressMode = AddressingModes.YIndirect;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
 
     }
@@ -65,6 +85,7 @@ public partial class CPU
         PC++;
         fetchedAddress = addr;
         fetchedByte = Read(addr);
+        _currentAddressMode = AddressingModes.Absolute;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int XAB() //X Absolute
@@ -78,6 +99,7 @@ public partial class CPU
         fetchedAddress = addr;
         fetchedByte = Read(addr);
         PC++;
+        _currentAddressMode = AddressingModes.XAbsolute;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int YAB() //Y Absolute
@@ -91,6 +113,7 @@ public partial class CPU
         fetchedAddress = addr;
         fetchedByte = Read(addr);
         PC++;
+        _currentAddressMode = AddressingModes.YAbsolute;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int IMP() //Implied
@@ -98,6 +121,7 @@ public partial class CPU
         //TODO: Verify This is Correct
         PC++;
         AccumMode = true;
+        _currentAddressMode = AddressingModes.Implied;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int IND() //Indirect
@@ -130,11 +154,13 @@ public partial class CPU
 
         }
         PC++;
+        _currentAddressMode = AddressingModes.Indirect;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int REL() /*relative*/ 
     {
         /*Dumb me I don't remember why there is nothing here */
+        _currentAddressMode = AddressingModes.Relative;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int ZPG() //Zero Page
@@ -143,6 +169,7 @@ public partial class CPU
         fetchedAddress = Read(PC);
         fetchedByte = Read(fetchedAddress);
         PC++;
+        _currentAddressMode = AddressingModes.ZeroPage;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int XZP() //X Zero Page
@@ -152,6 +179,7 @@ public partial class CPU
         fetchedAddress = (byte)(tempAddr + X);
         fetchedByte = Read(fetchedAddress);
         PC++;
+        _currentAddressMode = AddressingModes.XZeroPage;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
     private int YZP() //Y Zero Page
@@ -161,6 +189,7 @@ public partial class CPU
         fetchedAddress = (byte)(tempAddr + Y);
         fetchedByte = Read(fetchedAddress);
         PC++;
+        _currentAddressMode = AddressingModes.YZeroPage;
         return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
 }

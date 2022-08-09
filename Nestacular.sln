@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NestacularCore", "Nestacula
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nestacular", "Nestacular\Nestacular.csproj", "{C8164F08-E9CE-4C47-AC33-C4ACBD927152}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "6502", "6502\6502.csproj", "{85E07CA5-2A21-42C9-876A-2EEB73E1DCF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "6502", "6502\6502.csproj", "{85E07CA5-2A21-42C9-876A-2EEB73E1DCF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorTools", "EmulatorTools\EmulatorTools.csproj", "{E4BD34E5-335D-4E01-A4C6-517180384D29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmulatorTools", "EmulatorTools\EmulatorTools.csproj", "{E4BD34E5-335D-4E01-A4C6-517180384D29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TofuNET", "TofuNET\TofuNET.csproj", "{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{E4BD34E5-335D-4E01-A4C6-517180384D29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4BD34E5-335D-4E01-A4C6-517180384D29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4BD34E5-335D-4E01-A4C6-517180384D29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

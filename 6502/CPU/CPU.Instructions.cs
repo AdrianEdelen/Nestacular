@@ -35,7 +35,7 @@ public partial class CPU
 
     int ASL()
     {
-        if (_currentAddressMode = AddressingModes.Implied)
+        if (_currentAddressMode == AddressingModes.Implied)
         {
             if ((A & 128) != 0) _carryFlag = true;
             else _carryFlag = false;

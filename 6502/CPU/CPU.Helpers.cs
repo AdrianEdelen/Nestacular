@@ -7,6 +7,8 @@ public partial class CPU
 
     //branching is done several times throughout various opcodes.
     //the branching behavior is always the same, only the condition that determines if the branch should happen.
+    //TODO: Move this
+    bool didBranch = false;
     private void Branch(bool DoBranch)
     {
         PC++; //this gets us to the operand
@@ -15,6 +17,8 @@ public partial class CPU
         if (DoBranch && jumpDistance >= 0x80) PC -= (byte)(0xFF - jumpDistance + 1);
         else if (DoBranch) PC += ((byte)jumpDistance);
         else PC += 1;
+        didBranch = true;
+
     }
     //wrappers for stack manipulation.
     private void PushToStack(byte value)

@@ -20,19 +20,19 @@ public partial class CPU
         ZeroPage,
         XZeroPage,
         YZeroPage,
+        Accumulator,
         Undefined
     }
     private AddressingModes _currentAddressMode = AddressingModes.Undefined;
-    private int IMM() //Immediate
+    private void IMM() //Immediate
     {
         PC++;
         fetchedAddress = PC;
         fetchedByte = Read(PC);
         PC++;
         _currentAddressMode = AddressingModes.Immediate;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int XIN() //X IND
+    private void XIN() //X IND
     {
         //operand is a zero page address
 
@@ -46,9 +46,8 @@ public partial class CPU
         fetchedByte = Read(addr);
         PC++;
         _currentAddressMode = AddressingModes.XIndirect;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int YIN() //Y IND
+    private void YIN() //Y IND
     {
         //Differing from x Indirect, the order is a little different and there
         //is a carry
@@ -71,10 +70,9 @@ public partial class CPU
         fetchedByte = Read(addr);
         PC++;
         _currentAddressMode = AddressingModes.YIndirect;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
 
     }
-    private int ABS() //Absolute
+    private void ABS() //Absolute
     {
         //get the high and low bytes for the address and build a short;
         PC++;
@@ -86,9 +84,8 @@ public partial class CPU
         fetchedAddress = addr;
         fetchedByte = Read(addr);
         _currentAddressMode = AddressingModes.Absolute;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int XAB() //X Absolute
+    private void XAB() //X Absolute
     {
         PC++;
         byte PCL = Read(PC);
@@ -100,9 +97,8 @@ public partial class CPU
         fetchedByte = Read(addr);
         PC++;
         _currentAddressMode = AddressingModes.XAbsolute;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int YAB() //Y Absolute
+    private void YAB() //Y Absolute
     {
         PC++;
         byte PCL = Read(PC);
@@ -114,17 +110,14 @@ public partial class CPU
         fetchedByte = Read(addr);
         PC++;
         _currentAddressMode = AddressingModes.YAbsolute;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int IMP() //Implied
+    private void IMP() //Implied
     {
-        //TODO: Verify This is Correct
         PC++;
         AccumMode = true;
         _currentAddressMode = AddressingModes.Implied;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int IND() //Indirect
+    private void IND() //Indirect
     {
 
         //From my understanding it's:
@@ -155,24 +148,21 @@ public partial class CPU
         }
         PC++;
         _currentAddressMode = AddressingModes.Indirect;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int REL() /*relative*/ 
+    private void REL() /*relative*/ 
     {
-        /*Dumb me I don't remember why there is nothing here */
+        //TODO: Why is this empty
         _currentAddressMode = AddressingModes.Relative;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int ZPG() //Zero Page
+    private void ZPG() //Zero Page
     {
         PC++;
         fetchedAddress = Read(PC);
         fetchedByte = Read(fetchedAddress);
         PC++;
         _currentAddressMode = AddressingModes.ZeroPage;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int XZP() //X Zero Page
+    private void XZP() //X Zero Page
     {
         PC++;
         var tempAddr = Read(PC);
@@ -180,9 +170,8 @@ public partial class CPU
         fetchedByte = Read(fetchedAddress);
         PC++;
         _currentAddressMode = AddressingModes.XZeroPage;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
-    private int YZP() //Y Zero Page
+    private void YZP() //Y Zero Page
     {
         PC++;
         var tempAddr = Read(PC);
@@ -190,6 +179,5 @@ public partial class CPU
         fetchedByte = Read(fetchedAddress);
         PC++;
         _currentAddressMode = AddressingModes.YZeroPage;
-        return 0; //Extra Cycles based on address mode; TODO: Determine Extra Cycles;
     }
 }

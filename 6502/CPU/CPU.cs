@@ -7,25 +7,7 @@ public partial class CPU : ICPU
 {
     #region Registers
 
-    private UshortRegister _programCounter;
-    private ByteRegister _stackPointer;
-    private ByteRegister _accumulator;
-    private ByteRegister _xRegister;
-    private ByteRegister _yRegister;
-
-    private ushort PC { get => _programCounter.Get(); set => _programCounter.Set(value); }
-    private byte SP { get => _stackPointer.Get(); set => _stackPointer.Set(value); }
-    private byte A { get => _accumulator.Get(); set => _accumulator.Set(value); }
-    private byte X { get => _xRegister.Get(); set => _xRegister.Set(value); }
-    private byte Y { get => _yRegister.Get(); set => _yRegister.Set(value); }
-
-
-    public string ProgramCounterStatus { get => _programCounter.ToString(); }
-    public string StackPointerStatus { get => _stackPointer.ToString(); }
-    public string AccumulatorStatus { get => _accumulator.ToString(); }
-    public string XRegisterStatus { get => _xRegister.ToString(); }
-    public string YRegisterStatus { get => _yRegister.ToString(); }
-
+    private RegisterGroup _registers;
     public Status.Status Status { get; private set; }
     public InstructionStatus InstructionStatus { get; private set; }
 
@@ -84,27 +66,26 @@ public partial class CPU : ICPU
             AccumMode = false;
             _crossedPage = false;
             didBranch = false;
-            _currentAddressMode = AddressingModes.Undefined;
         }
         return InternalClock;
     }
 
     public ulong Clock()
     {
-        _opCode = _bus.Read(PC); //get the byte of memory at the address of the PC
+        _opCode = _bus.Read(_registers.PC); //get the byte of memory at the address of the PC
         var clockIncrement = _opCodes[_opCode].Execute(); //Actually Execute the op
         return clockIncrement;
     }
     internal void UpdateStatus()
     {
-        Status = new Status.Status(PC, SP, A, X, Y, CreateStatusByte(), 
+        Status = new Status.Status(_registers.PC, _registers.SP, _registers.A, _registers.X, _registers.Y, CreateStatusByte(), 
             _carryFlag, _zeroFlag, _interruptDisableFlag, _decimalModeFlag, 
             _breakCommandFlag, _overflowFlag, _negativeFlag, AccumMode, 
             fetchedByte, fetchedAddress, InternalClock);
     }
     internal void updateInstructionStatus()
     {
-        InstructionStatus = new InstructionStatus(PC, _opCodes[_opCode].ToString());
+        InstructionStatus = new InstructionStatus(_registers.PC, _opCodes[_opCode].ToString());
     }
 
     private void NMI() { /* nmi not implemented TODO */ }

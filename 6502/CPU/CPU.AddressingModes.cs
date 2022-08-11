@@ -6,118 +6,101 @@ using System.Threading.Tasks;
 namespace SixtyFiveOhTwo;
 public partial class CPU
 {
-    private enum AddressingModes
+    
+    private AddressModes IMM() //Immediate
     {
-        Immediate,
-        XIndirect,
-        YIndirect,
-        Absolute,
-        XAbsolute,
-        YAbsolute,
-        Implied,
-        Indirect,
-        Relative,
-        ZeroPage,
-        XZeroPage,
-        YZeroPage,
-        Accumulator,
-        Undefined
+        _registers.PC++;
+        fetchedAddress = _registers.PC;
+        fetchedByte = Read(_registers.PC);
+        _registers.PC++;
+        return AddressModes.Immediate;
     }
-    private AddressingModes _currentAddressMode = AddressingModes.Undefined;
-    private void IMM() //Immediate
-    {
-        PC++;
-        fetchedAddress = PC;
-        fetchedByte = Read(PC);
-        PC++;
-        _currentAddressMode = AddressingModes.Immediate;
-    }
-    private void XIN() //X IND
+    private AddressModes XIN() //X IND
     {
         //operand is a zero page address
 
-        PC++;
-        var indexByte = Read(PC);
-        var newPos = (byte)(indexByte + X);
+        _registers.PC++;
+        var indexByte = Read(_registers.PC);
+        var newPos = (byte)(indexByte + _registers.X);
         var calcedPos = Read(newPos);
         var calcedPos2 = Read((byte)(newPos + 1));
         ushort addr = (ushort)(calcedPos2 << 8 | calcedPos);
         fetchedAddress = addr;
         fetchedByte = Read(addr);
-        PC++;
-        _currentAddressMode = AddressingModes.XIndirect;
+        _registers.PC++;
+        return AddressModes.XIndirect;
     }
-    private void YIN() //Y IND
+    private AddressModes YIN() //Y IND
     {
         //Differing from x Indirect, the order is a little different and there
         //is a carry
-        PC++;
-        byte indexByte = Read(PC);
+        _registers.PC++;
+        byte indexByte = Read(_registers.PC);
         byte b1 = Read(indexByte);
         byte b2 = Read((byte)(indexByte + 1));
         if (indexByte == 0xFF) b2++;
         ushort addr = (ushort)(b2 << 8 | b1);
 
-        if (Y == 0xFF && indexByte != 0xFF)
+        if (_registers.Y == 0xFF && indexByte != 0xFF)
         {
             addr += 0x100;
             addr--;
         }
-        else if (Y == 0xFF && indexByte == 0xFF) addr--; 
-        else addr += Y;
+        else if (_registers.Y == 0xFF && indexByte == 0xFF) addr--; 
+        else addr += _registers.Y;
 
         fetchedAddress = addr;
         fetchedByte = Read(addr);
-        PC++;
-        _currentAddressMode = AddressingModes.YIndirect;
+        _registers.PC++;
+        return AddressModes.YIndirect;
 
     }
-    private void ABS() //Absolute
+    private AddressModes ABS() //Absolute
     {
         //get the high and low bytes for the address and build a short;
-        PC++;
-        byte PCL = Read(PC);
-        PC++;
-        byte PCH = Read(PC);
+        _registers.PC++;
+        byte PCL = Read(_registers.PC);
+        _registers.PC++;
+        byte PCH = Read(_registers.PC);
         ushort addr = (ushort)(PCH << 8 | PCL);
-        PC++;
+        _registers.PC++;
         fetchedAddress = addr;
         fetchedByte = Read(addr);
-        _currentAddressMode = AddressingModes.Absolute;
+        return AddressModes.Absolute;
     }
-    private void XAB() //X Absolute
+    private AddressModes XAB() //X Absolute
     {
-        PC++;
-        byte PCL = Read(PC);
-        PC++;
-        byte PCH = Read(PC);
+        _registers.PC++;
+        byte PCL = Read(_registers.PC);
+        _registers.PC++;
+        byte PCH = Read(_registers.PC);
         ushort addr = (ushort)(PCH << 8 | PCL);
-        addr = (ushort)(addr + X);
+        addr = (ushort)(addr + _registers.X);
         fetchedAddress = addr;
         fetchedByte = Read(addr);
-        PC++;
-        _currentAddressMode = AddressingModes.XAbsolute;
+        _registers.PC++;
+        return AddressModes.XAbsolute;
     }
-    private void YAB() //Y Absolute
+    private AddressModes YAB() //Y Absolute
     {
-        PC++;
-        byte PCL = Read(PC);
-        PC++;
-        byte PCH = Read(PC);
+        _registers.PC++;
+        byte PCL = Read(_registers.PC);
+        _registers.PC++;
+        byte PCH = Read(_registers.PC);
         ushort addr = (ushort)(PCH << 8 | PCL);
-        addr = (ushort)(addr + Y);
+        addr = (ushort)(addr + _registers.Y);
         fetchedAddress = addr;
         fetchedByte = Read(addr);
-        PC++;
-        _currentAddressMode = AddressingModes.YAbsolute;
+        _registers.PC++;
+        return AddressModes.YAbsolute;
     }
-    private void IMP() //Implied
+    private AddressModes IMP() //Implied
     {
-        PC++;
+        _registers.PC++;
         AccumMode = true;
-        _currentAddressMode = AddressingModes.Implied;
+        return AddressModes.Implied;
     }
-    private void IND() //Indirect
+    private AddressModes IND() //Indirect
     {
 
         //From my understanding it's:
@@ -125,10 +108,10 @@ public partial class CPU
         //go to the location from those bytes
         //return the value from the location calculated from the original immediate calculation
 
-        PC++;
-        byte PCL = Read(PC);
-        PC++;
-        byte PCH = Read(PC);
+        _registers.PC++;
+        byte PCL = Read(_registers.PC);
+        _registers.PC++;
+        byte PCH = Read(_registers.PC);
         ushort addr = (ushort)(PCH << 8 | PCL);
         if ((addr & 0x00FF) == 0xFF)
         {
@@ -146,38 +129,38 @@ public partial class CPU
             fetchedByte = Read(calcedLocation);
 
         }
-        PC++;
-        _currentAddressMode = AddressingModes.Indirect;
+        _registers.PC++;
+        return AddressModes.Indirect;
     }
-    private void REL() /*relative*/ 
+    private AddressModes REL() /*relative*/ 
     {
         //TODO: Why is this empty
-        _currentAddressMode = AddressingModes.Relative;
+        return AddressModes.Relative;
     }
-    private void ZPG() //Zero Page
+    private AddressModes ZPG() //Zero Page
     {
-        PC++;
-        fetchedAddress = Read(PC);
+        _registers.PC++;
+        fetchedAddress = Read(_registers.PC);
         fetchedByte = Read(fetchedAddress);
-        PC++;
-        _currentAddressMode = AddressingModes.ZeroPage;
+        _registers.PC++;
+        return AddressModes.ZeroPage;
     }
-    private void XZP() //X Zero Page
+    private AddressModes XZP() //X Zero Page
     {
-        PC++;
-        var tempAddr = Read(PC);
-        fetchedAddress = (byte)(tempAddr + X);
+        _registers.PC++;
+        var tempAddr = Read(_registers.PC);
+        fetchedAddress = (byte)(tempAddr + _registers.X);
         fetchedByte = Read(fetchedAddress);
-        PC++;
-        _currentAddressMode = AddressingModes.XZeroPage;
+        _registers.PC++;
+        return AddressModes.XZeroPage;
     }
-    private void YZP() //Y Zero Page
+    private AddressModes YZP() //Y Zero Page
     {
-        PC++;
-        var tempAddr = Read(PC);
-        fetchedAddress = (byte)(tempAddr + Y);
+        _registers.PC++;
+        var tempAddr = Read(_registers.PC);
+        fetchedAddress = (byte)(tempAddr + _registers.Y);
         fetchedByte = Read(fetchedAddress);
-        PC++;
-        _currentAddressMode = AddressingModes.YZeroPage;
+        _registers.PC++;
+        return AddressModes.YZeroPage;
     }
 }

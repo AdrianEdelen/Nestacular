@@ -18,3 +18,13 @@ public class InvalidAddressingModeException : Exception
     protected InvalidAddressingModeException(System.Runtime.Serialization.SerializationInfo info,
         System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 }
+
+[Serializable]
+public class InvalidStatusBitException : Exception
+{
+    public InvalidStatusBitException() : base() { }
+    public InvalidStatusBitException(string message) : base(message) { }
+    public InvalidStatusBitException(string message, Exception inner) : base(message, inner) { }
+    protected InvalidStatusBitException(System.Runtime.Serialization.SerializationInfo info,
+        System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+}

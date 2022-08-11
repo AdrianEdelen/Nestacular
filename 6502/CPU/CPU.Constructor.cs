@@ -6,11 +6,13 @@ public partial class CPU
 {
     public CPU(IMemory bus, bool BCDEnabled)
     {
-        _programCounter = new UshortRegister(0xC000, "Program Counter"); //TODO: what is the actual starting value;
-        _stackPointer = new ByteRegister(0xFD, "Stack Pointer");
-        _accumulator = new ByteRegister(0x00, "Accumulator");
-        _xRegister = new ByteRegister(0x00, "X Register");
-        _yRegister = new ByteRegister(0x00, "Y register");
+        _registers = new RegisterGroup(
+            new UshortRegister(0xC000, "Program Counter"),/* TODO: What is the actual starting value here */
+            new ByteRegister(0xFD, "Stack Pointer"),
+            new ByteRegister(0x00, "Accumulator"),
+            new ByteRegister(0x00, "X Register"),
+            new ByteRegister(0x00, "Y register")
+            );
 
         _BCDEnabled = BCDEnabled;
         _bus = bus;
@@ -21,7 +23,7 @@ public partial class CPU
 
         //Beware those who enter for this is a beast
         //This list is byte mapped, the order of the list is critical, and you can determine what byte aligns with what opcode by using the comment table surrounding the list definition.
-        static Instruction M(string name, Func<int> op, Func<int> addr) { return new Instruction(name, op, addr); }
+        static Instruction M(string name, Func<AddressModes, int> op, Func<AddressModes> addr) { return new Instruction(name, op, addr); }
         _opCodes.AddRange(new List<Instruction>(){
 //    00               01               02               03               04               05               06               07               08               09               0A               0B               0C               0D               0E                0F            
 /*00*/M("BRK",BRK,IMP),M("ORA",ORA,XIN),M("JAM",JAM,IMP),M("SLO",SLO,XIN),M("NOP",NOP,ZPG),M("ORA",ORA,ZPG),M("ASL",ASL,ZPG),M("SLO",SLO,ZPG),M("PHP",PHP,IMP),M("ORA",ORA,IMM),M("ASL",ASL,IMP),M("ANC",ANC,IMM),M("NOP",NOP,ABS),M("ORA",ORA,ABS),M("ASL",ASL,ABS),M("SLO",SLO,ABS),

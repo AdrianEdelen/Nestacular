@@ -11,7 +11,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "6502", "6502\6502.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmulatorTools", "EmulatorTools\EmulatorTools.csproj", "{E4BD34E5-335D-4E01-A4C6-517180384D29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TofuNET", "TofuNET\TofuNET.csproj", "{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TofuNET", "TofuNET\TofuNET.csproj", "{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TofuNET Tests", "TofuNET Tests\TofuNET Tests.csproj", "{AB6CA148-17E8-432A-A869-1E9EF3F4C406}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "6502_Tests", "6502_Tests\6502_Tests.csproj", "{C2CA5E53-C2A0-4152-9178-AEA1F9B5445B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmulatorTools_Tests", "EmulatorTools_Tests\EmulatorTools_Tests.csproj", "{92D6C028-95BE-403E-9031-D02C9EDB16B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nestacular_Tests", "Nestacular_Tests\Nestacular_Tests.csproj", "{A3E02A81-416D-487D-AF2E-11AB7DA51251}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NestacularCore_Tests", "NestacularCore_Tests\NestacularCore_Tests.csproj", "{EFBC378E-0F0C-4BD2-9BD1-FBB5FE306746}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +49,26 @@ Global
 		{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A947A95-AE31-4EE0-AE66-AD72F1EC4268}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB6CA148-17E8-432A-A869-1E9EF3F4C406}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB6CA148-17E8-432A-A869-1E9EF3F4C406}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB6CA148-17E8-432A-A869-1E9EF3F4C406}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB6CA148-17E8-432A-A869-1E9EF3F4C406}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2CA5E53-C2A0-4152-9178-AEA1F9B5445B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2CA5E53-C2A0-4152-9178-AEA1F9B5445B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2CA5E53-C2A0-4152-9178-AEA1F9B5445B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2CA5E53-C2A0-4152-9178-AEA1F9B5445B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92D6C028-95BE-403E-9031-D02C9EDB16B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92D6C028-95BE-403E-9031-D02C9EDB16B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92D6C028-95BE-403E-9031-D02C9EDB16B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92D6C028-95BE-403E-9031-D02C9EDB16B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3E02A81-416D-487D-AF2E-11AB7DA51251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3E02A81-416D-487D-AF2E-11AB7DA51251}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3E02A81-416D-487D-AF2E-11AB7DA51251}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3E02A81-416D-487D-AF2E-11AB7DA51251}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFBC378E-0F0C-4BD2-9BD1-FBB5FE306746}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFBC378E-0F0C-4BD2-9BD1-FBB5FE306746}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFBC378E-0F0C-4BD2-9BD1-FBB5FE306746}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFBC378E-0F0C-4BD2-9BD1-FBB5FE306746}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

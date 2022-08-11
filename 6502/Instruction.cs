@@ -1,13 +1,15 @@
-﻿namespace SixtyFiveOhTwo;
+﻿using static SixtyFiveOhTwo.CPU;
+
+namespace SixtyFiveOhTwo;
 internal class Instruction
 {
-    private delegate int OpDel();
-    private delegate int AddrMode();
+    private delegate int OpDel(AddressModes addrMode);
+    private delegate AddressModes AddrMode();
     private string _name;
 
     OpDel _opDel;
     AddrMode _addrMode;
-    public Instruction(string name, Func<int> op, Func<int> addrMode)
+    public Instruction(string name, Func<AddressModes, int> op, Func<AddressModes> addrMode)
     {
         _name = name;
         _opDel = new OpDel(op);
@@ -15,9 +17,10 @@ internal class Instruction
     }
     public ulong Execute()
     {
-        var additionalClockCycles = _addrMode.Invoke();
-        var clockCycles = _opDel.Invoke();
-        return (ulong)(clockCycles + additionalClockCycles);
+        //TODO: probably change _currentAddressMode from a state variable to a return value addrmode, and pass it into the opDel.
+        var currentAddressMode = _addrMode.Invoke();
+        var clockCycles = _opDel.Invoke(currentAddressMode);
+        return (ulong)(clockCycles);
     }
     public override string ToString()
     {

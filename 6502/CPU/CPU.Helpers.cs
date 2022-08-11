@@ -11,12 +11,12 @@ public partial class CPU
     bool didBranch = false;
     private void Branch(bool DoBranch)
     {
-        PC++; //this gets us to the operand
-        var jumpDistance = Read(PC) + 1; //plus two to get over the operands.
+        _registers.PC++; //this gets us to the operand
+        var jumpDistance = Read(_registers.PC) + 1; //plus two to get over the operands.
         //determine if the jump is fwd or bwd.
-        if (DoBranch && jumpDistance >= 0x80) PC -= (byte)(0xFF - jumpDistance + 1);
-        else if (DoBranch) PC += ((byte)jumpDistance);
-        else PC += 1;
+        if (DoBranch && jumpDistance >= 0x80) _registers.PC -= (byte)(0xFF - jumpDistance + 1);
+        else if (DoBranch) _registers.PC += ((byte)jumpDistance);
+        else _registers.PC += 1;
         didBranch = true;
 
     }
@@ -24,14 +24,14 @@ public partial class CPU
     private void PushToStack(byte value)
     {
         //if (value == 0x3A) Debugger.Break();
-        ushort currentStackPosition = (ushort)(0x01 << 8 | SP);
+        ushort currentStackPosition = (ushort)(0x01 << 8 | _registers.SP);
         Write(currentStackPosition, value);
-        SP--;
+        _registers.SP--;
     }
     private byte PopFromStack()
     {
-        SP++;
-        ushort currentStackPosition = (ushort)(0x01 << 8 | SP);
+        _registers.SP++;
+        ushort currentStackPosition = (ushort)(0x01 << 8 | _registers.SP);
         return Read(currentStackPosition);
     }
 
@@ -44,7 +44,7 @@ public partial class CPU
     }
     private void AccumChanged()
     {
-        if (A != 0x00) _zeroFlag = false; else _zeroFlag = true;
-        if ((A & 128) != 0) _negativeFlag = true; else _negativeFlag = false;
+        if (_registers.A != 0x00) _zeroFlag = false; else _zeroFlag = true;
+        if ((_registers.A & 128) != 0) _negativeFlag = true; else _negativeFlag = false;
     }
 }

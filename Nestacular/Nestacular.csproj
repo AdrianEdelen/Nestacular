@@ -29,7 +29,15 @@
     <ProjectReference Include="..\EmulatorTools\EmulatorTools.csproj" />
     <ProjectReference Include="..\NestacularCore\NestacularCore.csproj" />
   </ItemGroup>
-  <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>Nestacular_Tests</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	
+	<Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />
   </Target>

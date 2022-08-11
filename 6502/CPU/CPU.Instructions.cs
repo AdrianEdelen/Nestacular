@@ -4,32 +4,32 @@ public partial class CPU
 {
     #region current Fully Functioning instructions Incl. Cycle Accuracy.
     //not including page crossing or other conditional cycle count changes.
-    int ADC()
+    int ADC(AddressModes addr)
     {
         // As The Prodigy once said: This is dangerous.
         //stop it patrick you're scaring him ^~&|^&~&^|()(|&^)
         var carry = _carryFlag ? 1 : 0; //is the carry flag set
-        var sum = A + fetchedByte + carry; //sum the Accum+operand+carry(if set)
+        var sum = _registers.A + fetchedByte + carry; //sum the Accum+operand+carry(if set)
         _carryFlag = sum > 0xFF ? true : false; //set/clear the carry based on the result.
-        _overflowFlag = (~(A ^ fetchedByte) & (A ^ sum) & 0x80) != 0 ? true : false; //what the fuck
-        A = (byte)sum;
+        _overflowFlag = (~(_registers.A ^ fetchedByte) & (_registers.A ^ sum) & 0x80) != 0 ? true : false; //what the fuck
+        _registers.A = (byte)sum;
         AccumChanged();
-        return AddClockCyclesStandard();
+        return AddClockCyclesStandard(addr);
     }
-    int AND()
+    int AND(AddressModes addr)
     {
-        A = (byte)(A & fetchedByte);
-        SetZeroAndNegFlag(A);
-        return AddClockCyclesStandard();
+        _registers.A = (byte)(_registers.A & fetchedByte);
+        SetZeroAndNegFlag(_registers.A);
+        return AddClockCyclesStandard(addr);
     }
-    int ASL()
+    int ASL(AddressModes addr)
     {
-        if (_currentAddressMode == AddressingModes.Implied)
+        if (addr == AddressModes.Implied)
         {
-            if ((A & 128) != 0) _carryFlag = true;
+            if ((_registers.A & 128) != 0) _carryFlag = true;
             else _carryFlag = false;
-            A = (byte)(A << 1);
-            SetZeroAndNegFlag(A);
+            _registers.A = (byte)(_registers.A << 1);
+            SetZeroAndNegFlag(_registers.A);
         }
         else
         {
@@ -39,38 +39,38 @@ public partial class CPU
             Write(fetchedAddress, fetchedByte); 
             SetZeroAndNegFlag(fetchedByte);
         }
-        return _currentAddressMode switch
+        return addr switch
         {
-            AddressingModes.Accumulator => 2,
-            AddressingModes.ZeroPage => 5,
-            AddressingModes.XZeroPage => 6,
-            AddressingModes.Absolute => 6,
-            AddressingModes.XAbsolute => 7,
+            AddressModes.Accumulator => 2,
+            AddressModes.ZeroPage => 5,
+            AddressModes.XZeroPage => 6,
+            AddressModes.Absolute => 6,
+            AddressModes.XAbsolute => 7,
             _ => throw new InvalidAddressingModeException()
         };
     }
-    int BIT()
+    int BIT(AddressModes addr)
     {
         //BIT sets the z flag as though the value in the address tested were anded together with the accum the n and v flags are set to match bits 7 and 6 respectively in the 
         //value store at the tested address
         var pos = fetchedByte;
-        if ((A & pos) == 0x00) _zeroFlag = true;
+        if ((_registers.A & pos) == 0x00) _zeroFlag = true;
         else _zeroFlag = false;
         if ((pos & 128) != 0) _negativeFlag = true;
         else _negativeFlag = false;
         if ((pos & 64) != 0) _overflowFlag = true;
         else _overflowFlag = false;
-        return _currentAddressMode switch
+        return addr switch
         {
-            AddressingModes.ZeroPage => 3,
-            AddressingModes.Absolute => 4,
+            AddressModes.ZeroPage => 3,
+            AddressModes.Absolute => 4,
             _ => throw new InvalidAddressingModeException()
         };
     }
-    int CMP()
+    int CMP(AddressModes addr)
     {
         var aa = fetchedByte;
-        var bb = A;
+        var bb = _registers.A;
         if (bb > aa)
         {
             byte cc = (byte)(bb - aa);
@@ -91,15 +91,15 @@ public partial class CPU
             _zeroFlag = true;
             _carryFlag = true;
         }
-        return AddClockCyclesStandard();
+        return AddClockCyclesStandard(addr);
     }
     #endregion
     #region in work
-    int CPX()
+    int CPX(AddressModes addr)
     {
         var clockCycles = 0;
         var aa = fetchedByte;
-        var bb = X;
+        var bb = _registers.X;
         if (bb > aa)
         {
             byte cc = (byte)(bb - aa);
@@ -132,11 +132,11 @@ public partial class CPU
 
 
 
-    int CPY()
+    int CPY(AddressModes addr)
     {
         var clockCycles = 0;
         var aa = fetchedByte;
-        var bb = Y;
+        var bb = _registers.Y;
         if (bb > aa)
         {
             byte cc = (byte)(bb - aa);
@@ -159,7 +159,7 @@ public partial class CPU
         }
         return clockCycles;
     }
-    int DEC()
+    int DEC(AddressModes addr)
     {
         var clockCycles = 0;
         fetchedByte--;
@@ -168,7 +168,7 @@ public partial class CPU
         return clockCycles;
     }
 
-    int INC()
+    int INC(AddressModes addr)
     {
         var clockCycles = 0;
         fetchedByte++;
@@ -177,26 +177,26 @@ public partial class CPU
         return clockCycles;
     }
 
-    int JSR()
+    int JSR(AddressModes addr)
     {
         var clockCycles = 0;
         //Jump but save the location of the PC in the stack.
-        var b = BitConverter.GetBytes((ushort)PC - 1);
+        var b = BitConverter.GetBytes((ushort)_registers.PC - 1);
         PushToStack(b[1]);
         PushToStack(b[0]);
-        PC = fetchedAddress;
+        _registers.PC = fetchedAddress;
         return clockCycles;
     }
 
-    int LSR()
+    int LSR(AddressModes addr)
     {
         var clockCycles = 0;
         if (AccumMode)
         {
-            if ((A & 1) != 0) _carryFlag = true;
+            if ((_registers.A & 1) != 0) _carryFlag = true;
             else _carryFlag = false;
-            A = (byte)(A >> 1);
-            SetZeroAndNegFlag(A);
+            _registers.A = (byte)(_registers.A >> 1);
+            SetZeroAndNegFlag(_registers.A);
         }
         if ((fetchedByte & 1) != 0) _carryFlag = true;
         else _carryFlag = false;
@@ -206,7 +206,7 @@ public partial class CPU
         return clockCycles;
     }
 
-    int PHP()
+    int PHP(AddressModes addr)
     {
         var clockCycles = 0;
         bool[] flags = new bool[8] { _carryFlag, _zeroFlag, _interruptDisableFlag, _decimalModeFlag, true, true, _overflowFlag, _negativeFlag };
@@ -215,7 +215,7 @@ public partial class CPU
         PushToStack(range);
         return clockCycles;
     }
-    int PLP()
+    int PLP(AddressModes addr)
     {
         var clockCycles = 0;
         var status = PopFromStack();
@@ -230,7 +230,7 @@ public partial class CPU
         _negativeFlag = (status & 128) != 0;
         return clockCycles;
     }
-    int ROL()
+    int ROL(AddressModes addr)
     {
         var clockCycles = 0;
         if (AccumMode)
@@ -239,10 +239,10 @@ public partial class CPU
             if (_carryFlag) bit0 = 1;
             else bit0 = 0;
             //check bit7 to see what the new carry flag chould be
-            _carryFlag = (A & 128) != 0 ? true : false;
-            A = (byte)(A << 1);
-            A = (byte)(A | bit0);
-            SetZeroAndNegFlag((byte)(A | bit0));
+            _carryFlag = (_registers.A & 128) != 0 ? true : false;
+            _registers.A = (byte)(_registers.A << 1);
+            _registers.A = (byte)(_registers.A | bit0);
+            SetZeroAndNegFlag((byte)(_registers.A | bit0));
         }
         else
         {
@@ -257,7 +257,7 @@ public partial class CPU
         }
         return clockCycles;
     }
-    int ROR()
+    int ROR(AddressModes addr)
     {
         var clockCycles = 0;
         byte bit7;
@@ -268,9 +268,9 @@ public partial class CPU
             else bit7 = 0;
             bit7 = (byte)(bit7 << 7);
             //check bit0 to see what the new carry flag chould be
-            _carryFlag = (A & 1) != 0 ? true : false;
-            var shiftedAccum = (byte)(A >> 1); //shift the accum right 1
-            A = (byte)(shiftedAccum | bit7);
+            _carryFlag = (_registers.A & 1) != 0 ? true : false;
+            var shiftedAccum = (byte)(_registers.A >> 1); //shift the accum right 1
+            _registers.A = (byte)(shiftedAccum | bit7);
             AccumChanged();
         }
         else
@@ -286,7 +286,7 @@ public partial class CPU
         }
         return clockCycles;
     }
-    int RTI()
+    int RTI(AddressModes addr)
     {
         var clockCycles = 0;
         var status = PopFromStack();
@@ -298,114 +298,113 @@ public partial class CPU
         _negativeFlag = (status & 128) != 0;
         var PC1 = PopFromStack();
         var PC2 = PopFromStack();
-        PC = (ushort)(PC2 << 8 | PC1);
+        _registers.PC = (ushort)(PC2 << 8 | PC1);
         return clockCycles;
     }
-    int RTS()
+    int RTS(AddressModes addr)
     {
         var clockCycles = 0;
         var addr2 = PopFromStack();
         var addr1 = PopFromStack();
-        PC = (ushort)((addr1 << 8 | addr2) + 0x0001);
+        _registers.PC = (ushort)((addr1 << 8 | addr2) + 0x0001);
         return clockCycles;
     }
-    int SBC()
+    int SBC(AddressModes addr)
     {
         var clockCycles = 0;
         byte op = (byte)~fetchedByte;
 
         var carry = _carryFlag ? 1 : 0; //is the carry flag set
-        var sum = A + op + carry; //sum the Accum+operand+carry(if set)
+        var sum = _registers.A + op + carry; //sum the Accum+operand+carry(if set)
         _carryFlag = sum > 0xFF ? true : false; //set/clear the carry based on the result.
-        _overflowFlag = (~(A ^ op) & (A ^ sum) & 0x80) != 0 ? true : false;//same as addition but with negated operand
-        A = (byte)sum; //set accumulator
+        _overflowFlag = (~(_registers.A ^ op) & (_registers.A ^ sum) & 0x80) != 0 ? true : false;//same as addition but with negated operand
+        _registers.A = (byte)sum; //set accumulator
         AccumChanged();
         return clockCycles;
     }
     #endregion
     #region One Line / Simple Instructions
-    int PLA() { var clockCycles = 0; A = PopFromStack(); SetZeroAndNegFlag(A); return clockCycles; }
-    int STY() { var clockCycles = 0; Write(fetchedAddress, Y); return clockCycles; }
-    int TAX() { var clockCycles = 0; X = A; SetZeroAndNegFlag(X); return clockCycles; }
-    int TAY() { var clockCycles = 0; Y = A; SetZeroAndNegFlag(Y); return clockCycles; }
-    int TSX() { var clockCycles = 0; X = SP; SetZeroAndNegFlag(X); return clockCycles; }
-    int TXS() { var clockCycles = 0; SP = X; return clockCycles; }
-    int TYA() { var clockCycles = 0; A = Y; SetZeroAndNegFlag(A); return clockCycles; }
-    int SLO() { var clockCycles = 0; ASL(); A |= Read(fetchedAddress); SetZeroAndNegFlag(A); return clockCycles; }
-    int INX() { var clockCycles = 0; X++; SetZeroAndNegFlag(X); return clockCycles; }
-    int INY() { var clockCycles = 0; Y++; SetZeroAndNegFlag(Y); return clockCycles; }
-    int JMP() { var clockCycles = 0; PC = fetchedAddress; return clockCycles; }
-    int NOP() { var clockCycles = 0; /*This method intentionally left blank*/ return clockCycles; }
-    int ORA() { var clockCycles = 0; A |= fetchedByte; SetZeroAndNegFlag(A); return clockCycles; }
-    int PHA() { var clockCycles = 0; PushToStack(A); return clockCycles; }
-    int LDA() { var clockCycles = 0; A = fetchedByte; AccumChanged(); return clockCycles; }
-    int LDX() { var clockCycles = 0; X = fetchedByte; SetZeroAndNegFlag(X); return clockCycles; }
-    int LDY() { var clockCycles = 0; Y = fetchedByte; SetZeroAndNegFlag(Y); return clockCycles; }
-    int DEX() { var clockCycles = 0; X--; SetZeroAndNegFlag(X); return clockCycles; }
-    int DEY() { var clockCycles = 0; Y--; SetZeroAndNegFlag(Y); return clockCycles; }
-    int EOR() { var clockCycles = 0; A ^= fetchedByte; AccumChanged(); return clockCycles; }
-    int JAM() { throw new CPUHaltedException($"JAM opcode called. CPU Status: {Status} | InstructionStatus: {InstructionStatus}"); }
-    int BMI() { var clockCycles = 0; Branch(_negativeFlag); return clockCycles; }
-    int BNE() { var clockCycles = 0; Branch(!_zeroFlag); return clockCycles; }
-    int BPL() { var clockCycles = 0; Branch(!_negativeFlag); return clockCycles; }
-    int BRK() { var clockCycles = 0; PC++; NMI(); return clockCycles; }
-    int BVC() { var clockCycles = 0; Branch(!_overflowFlag); return clockCycles; }
-    int BVS() { var clockCycles = 0; Branch(_overflowFlag); return clockCycles; }
-    int CLC() { var clockCycles = 0; _carryFlag = false; return clockCycles; }
-    int CLI() { var clockCycles = 0; _decimalModeFlag = false; return clockCycles; }
-    int CLV() { var clockCycles = 0; _overflowFlag = false; return clockCycles; }
-
-    int BCC() { var clockCycles = 0; Branch(!_carryFlag); return clockCycles; }
-    int BCS() { var clockCycles = 0; Branch(_carryFlag); return clockCycles; }
-    int BEQ() { var clockCycles = 0; Branch(_zeroFlag); return clockCycles; }
-    int SEC() { var clockCycles = 0; _carryFlag = true; return clockCycles; }
-    int SED() { var clockCycles = 0; _decimalModeFlag = true; return clockCycles; }
-    int SEI() { var clockCycles = 0; _interruptDisableFlag = true; return clockCycles; }
-    int STA() { var clockCycles = 0; Write(fetchedAddress, A); return clockCycles; }
-    int STX() { var clockCycles = 0; Write(fetchedAddress, X); return clockCycles; }
-    int RLA() { var clockCycles = 0; ROL(); fetchedByte = Read(fetchedAddress); AND(); return clockCycles; } //TODO: Verify this works.
-    int SRE() { var clockCycles = 0; LSR(); fetchedByte = Read(fetchedAddress); EOR(); return clockCycles; } //TODO: Verify This works.
-    int RRA() { var clockCycles = 0; ROR(); fetchedByte = Read(fetchedAddress); ADC(); return clockCycles; }
-    int SAX() { var clockCycles = 0; Write(fetchedAddress, (byte)(A & X)); return clockCycles; }
-    int TXA() { var clockCycles = 0; A = X; SetZeroAndNegFlag(A); return clockCycles; }
-    int ISC() { var clockCycles = 0; INC(); SBC(); return clockCycles; }
-    int USB() { var clockCycles = 0; SBC(); NOP(); return clockCycles; } //TODO: Why is this not referenced in the opcode table?
-    int DCP() { var clockCycles = 0; DEC(); CMP(); return clockCycles; }
-    int LAX() { var clockCycles = 0; LDA(); LDX(); return clockCycles; }
-    int SBX() { var clockCycles = 0; CMP(); DEX(); SetZeroAndNegFlag(fetchedByte); return clockCycles; }
-    int CLD() { var clockCycles = 0; _decimalModeFlag = false; return clockCycles; }
+    int PLA(AddressModes addr) { var clockCycles = 0; _registers.A = PopFromStack(); SetZeroAndNegFlag(_registers.A); return clockCycles; }
+    int STY(AddressModes addr) { var clockCycles = 0; Write(fetchedAddress, _registers.Y); return clockCycles; }
+    int TAX(AddressModes addr) { var clockCycles = 0; _registers.X = _registers.A; SetZeroAndNegFlag(_registers.X); return clockCycles; }
+    int TAY(AddressModes addr) { var clockCycles = 0; _registers.Y = _registers.A; SetZeroAndNegFlag(_registers.Y); return clockCycles; }
+    int TSX(AddressModes addr) { var clockCycles = 0; _registers.X = _registers.SP; SetZeroAndNegFlag(_registers.X); return clockCycles; }
+    int TXS(AddressModes addr) { var clockCycles = 0; _registers.SP = _registers.X; return clockCycles; }
+    int TYA(AddressModes addr) { var clockCycles = 0; _registers.A = _registers.Y; SetZeroAndNegFlag(_registers.A); return clockCycles; }
+    int SLO(AddressModes addr) { var clockCycles = 0; ASL(addr); _registers.A |= Read(fetchedAddress); SetZeroAndNegFlag(_registers.A); return clockCycles; }
+    int INX(AddressModes addr) { var clockCycles = 0; _registers.X++; SetZeroAndNegFlag(_registers.X); return clockCycles; }
+    int INY(AddressModes addr) { var clockCycles = 0; _registers.Y++; SetZeroAndNegFlag(_registers.Y); return clockCycles; }
+    int JMP(AddressModes addr) { var clockCycles = 0; _registers.PC = fetchedAddress; return clockCycles; }
+    int NOP(AddressModes addr) { var clockCycles = 0; /*This method intentionally left blank*/ return clockCycles; }
+    int ORA(AddressModes addr) { var clockCycles = 0; _registers.A |= fetchedByte; SetZeroAndNegFlag(_registers.A); return clockCycles; }
+    int PHA(AddressModes addr) { var clockCycles = 0; PushToStack(_registers.A); return clockCycles; }
+    int LDA(AddressModes addr) { var clockCycles = 0; _registers.A = fetchedByte; AccumChanged(); return clockCycles; }
+    int LDX(AddressModes addr) { var clockCycles = 0; _registers.X = fetchedByte; SetZeroAndNegFlag(_registers.X); return clockCycles; }
+    int LDY(AddressModes addr) { var clockCycles = 0; _registers.Y = fetchedByte; SetZeroAndNegFlag(_registers.Y); return clockCycles; }
+    int DEX(AddressModes addr) { var clockCycles = 0; _registers.X--; SetZeroAndNegFlag(_registers.X); return clockCycles; }
+    int DEY(AddressModes addr) { var clockCycles = 0; _registers.Y--; SetZeroAndNegFlag(_registers.Y); return clockCycles; }
+    int EOR(AddressModes addr) { var clockCycles = 0; _registers.A ^= fetchedByte; AccumChanged(); return clockCycles; }
+    int JAM(AddressModes addr) { throw new CPUHaltedException($"JAM opcode called. CPU Status: {Status} | InstructionStatus: {InstructionStatus}"); }
+    int BMI(AddressModes addr) { var clockCycles = 0; Branch(_negativeFlag); return clockCycles; }
+    int BNE(AddressModes addr) { var clockCycles = 0; Branch(!_zeroFlag); return clockCycles; }
+    int BPL(AddressModes addr) { var clockCycles = 0; Branch(!_negativeFlag); return clockCycles; }
+    int BRK(AddressModes addr) { var clockCycles = 0; _registers.PC++; NMI(); return clockCycles; }
+    int BVC(AddressModes addr) { var clockCycles = 0; Branch(!_overflowFlag); return clockCycles; }
+    int BVS(AddressModes addr) { var clockCycles = 0; Branch(_overflowFlag); return clockCycles; }
+    int CLC(AddressModes addr) { var clockCycles = 0; _carryFlag = false; return clockCycles; }
+    int CLI(AddressModes addr) { var clockCycles = 0; _decimalModeFlag = false; return clockCycles; }
+    int CLV(AddressModes addr) { var clockCycles = 0; _overflowFlag = false; return clockCycles; }
+    int BCC(AddressModes addr) { var clockCycles = 0; Branch(!_carryFlag); return clockCycles; }
+    int BCS(AddressModes addr) { var clockCycles = 0; Branch(_carryFlag); return clockCycles; }
+    int BEQ(AddressModes addr) { var clockCycles = 0; Branch(_zeroFlag); return clockCycles; }
+    int SEC(AddressModes addr) { var clockCycles = 0; _carryFlag = true; return clockCycles; }
+    int SED(AddressModes addr) { var clockCycles = 0; _decimalModeFlag = true; return clockCycles; }
+    int SEI(AddressModes addr) { var clockCycles = 0; _interruptDisableFlag = true; return clockCycles; }
+    int STA(AddressModes addr) { var clockCycles = 0; Write(fetchedAddress, _registers.A); return clockCycles; }
+    int STX(AddressModes addr) { var clockCycles = 0; Write(fetchedAddress, _registers.X); return clockCycles; }
+    int RLA(AddressModes addr) { var clockCycles = 0; ROL(addr); fetchedByte = Read(fetchedAddress); AND(addr); return clockCycles; } //TODO: Verify this works.
+    int SRE(AddressModes addr) { var clockCycles = 0; LSR(addr); fetchedByte = Read(fetchedAddress); EOR(addr); return clockCycles; } //TODO: Verify This works.
+    int RRA(AddressModes addr) { var clockCycles = 0; ROR(addr); fetchedByte = Read(fetchedAddress); ADC(addr); return clockCycles; }
+    int SAX(AddressModes addr) { var clockCycles = 0; Write(fetchedAddress, (byte)(_registers.A & _registers.X)); return clockCycles; }
+    int TXA(AddressModes addr) { var clockCycles = 0; _registers.A = _registers.X; SetZeroAndNegFlag(_registers.A); return clockCycles; }
+    int ISC(AddressModes addr) { var clockCycles = 0; INC(addr); SBC(addr); return clockCycles; }
+    int USB(AddressModes addr) { var clockCycles = 0; SBC(addr); NOP(addr); return clockCycles; } //TODO: Why is this not referenced in the opcode table?
+    int DCP(AddressModes addr) { var clockCycles = 0; DEC(addr); CMP(addr); return clockCycles; }
+    int LAX(AddressModes addr) { var clockCycles = 0; LDA(addr); LDX(addr); return clockCycles; }
+    int SBX(AddressModes addr) { var clockCycles = 0; CMP(addr); DEX(addr); SetZeroAndNegFlag(fetchedByte); return clockCycles; }
+    int CLD(AddressModes addr) { var clockCycles = 0; _decimalModeFlag = false; return clockCycles; }
     #endregion
     #region Unimplemented Instructions
     //So far I have not encountered these instructions. 
-    int ANC() { throw new NotImplementedException(); }
-    int ALR() { throw new NotImplementedException(); }
-    int ARR() { throw new NotImplementedException(); }
-    int ANE() { throw new NotImplementedException(); }
-    int SHA() { throw new NotImplementedException(); }
-    int TAS() { throw new NotImplementedException(); }
-    int SHY() { throw new NotImplementedException(); }
-    int SHX() { throw new NotImplementedException(); }
-    int LXA() { throw new NotImplementedException(); }
-    int LAS() { throw new NotImplementedException(); }
+    int ANC(AddressModes addr) { throw new NotImplementedException(); }
+    int ALR(AddressModes addr) { throw new NotImplementedException(); }
+    int ARR(AddressModes addr) { throw new NotImplementedException(); }
+    int ANE(AddressModes addr) { throw new NotImplementedException(); }
+    int SHA(AddressModes addr) { throw new NotImplementedException(); }
+    int TAS(AddressModes addr) { throw new NotImplementedException(); }
+    int SHY(AddressModes addr) { throw new NotImplementedException(); }
+    int SHX(AddressModes addr) { throw new NotImplementedException(); }
+    int LXA(AddressModes addr) { throw new NotImplementedException(); }
+    int LAS(AddressModes addr) { throw new NotImplementedException(); }
 
     #endregion
 
 
-    private int AddClockCyclesStandard()
+    private int AddClockCyclesStandard(AddressModes addr)
     {
         var retVal = 0;
         if (didBranch) retVal += CheckBranchSamePage();
         retVal += CheckPageCross();
-        return retVal += _currentAddressMode switch
+        return retVal += addr switch
         {
-            AddressingModes.Immediate => 2,
-            AddressingModes.ZeroPage => 3,
-            AddressingModes.XZeroPage => 4,
-            AddressingModes.Absolute => 4,
-            AddressingModes.XAbsolute => 4,
-            AddressingModes.YAbsolute => 4,
-            AddressingModes.XIndirect => 6,
-            AddressingModes.YIndirect => 5,
+            AddressModes.Immediate => 2,
+            AddressModes.ZeroPage => 3,
+            AddressModes.XZeroPage => 4,
+            AddressModes.Absolute => 4,
+            AddressModes.XAbsolute => 4,
+            AddressModes.YAbsolute => 4,
+            AddressModes.XIndirect => 6,
+            AddressModes.YIndirect => 5,
             _ => throw new InvalidAddressingModeException()
         };
     }

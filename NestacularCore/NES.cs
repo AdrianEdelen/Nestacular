@@ -95,6 +95,15 @@ public class NES
     }
     public ExecutionMode CurrentExecutionMode = ExecutionMode.FullSpeed;
     public AutoResetEvent ExecutionBlocker = new AutoResetEvent(false);
+
+    //TODO: how to get the COMPLETE recoverable state of the emulator every cycle, this can give perfect save states as well as perfect rewinds (I will accept CPU cycle)
+    //I guess cpu cycle is not hard, we just need to know 
+    //A. what rom is loaded,
+    //B. The state of the ram,
+    //C. the state of all registers,
+    //D. the state of all pointers.
+    //E. the state of all clocks in the system, this will tell us how far into a frame we are etc.
+    //F> need to determine the PPU State.
     public async void GenerateFrame()
     {
         //262*341 screen size

@@ -21,6 +21,10 @@ namespace Nestacular.NESCore;
 /// instead they just know about the bus, and can read and write to and from the bus to communicate with the other components
 /// 
 /// </summary>
+
+//There should possibly be another class for the middleman between the CORE and the display,
+//the Monogame portion should ONLY handler rendering, and marshalling inputs. / displaying information.
+//but the NES class probably should not handle stuff like execution modes.
 public class NES
 {
     public enum ExecutionMode
@@ -112,8 +116,6 @@ public class NES
         //easiest way to do this is modulo and a loop
         var nextFrame = new Frame();
         var frameClock = 0;
-        var ppuClock = 0;
-        var cpuClock = 0;
         if (CurrentExecutionMode == ExecutionMode.FrameStep) ExecutionBlocker.WaitOne();
         while (frameClock < 89342)
         {
@@ -122,18 +124,12 @@ public class NES
             if (color != null)
                 nextFrame.AddRandomColor();
             //nextFrame.AddColor((Color)color);
-            ppuClock++;
             if (frameClock % 3 == 0)
             {
                 //every third time
                 if (CurrentExecutionMode == ExecutionMode.CpuStep || CurrentExecutionMode == ExecutionMode.PpuStep) ExecutionBlocker.WaitOne();
                 _CPU.Step(MasterClock);
-                InstructionHistory.Insert(0, InstructionStatus);
-                if (InstructionHistory.Count > 15)
-                {
-                    InstructionHistory.RemoveAt(InstructionHistory.Count - 1);
-                }
-                cpuClock++;
+                
             }
             frameClock++;
         }

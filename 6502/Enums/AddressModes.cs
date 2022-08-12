@@ -1,4 +1,4 @@
-﻿namespace SixtyFiveOhTwo;
+﻿namespace SixtyFiveOhTwo.Enums;
 internal enum AddressModes
 {
     Immediate,

@@ -2,31 +2,42 @@
 using SixtyFiveOhTwo.Registers;
 using SixtyFiveOhTwo.Status;
 using EmulatorTools.CPU;
+using SixtyFiveOhTwo.Flags;
 namespace SixtyFiveOhTwo;
+/* 
+       The CPU reads and writes to the bus to communicate with the rest of the NES, 
+       it should also function as a regular 6502 just without decimal mode
+       as the NES RICOH 2A0C did not have decimal mode enabled 
+
+       On reset, the processor will read address $FFFC and $FFFD (called the reset vector) and load the program counter (PC) with their content.
+       For example, if $FFFC = $00 and $FFFD = $10, then the PC will get loaded with $1000 and execution will start there. However, most 6502 systems contain ROM in the upper address region, say $E000-$FFFF so it's likely that the reset vector will point to a location there.
+       Most systems have an OS of some sorts - ranging from a simple machine language monitor, BASIC interpreter, even GUI interfaces such as Contiki.
+       Your OS must have a method of loading the programs generated from an assembler or compiler into RAM. It must also have a method of executing code in RAM.
+       For simplicity, lets say you have a simple command line promt and you can load a program using the "LOAD Example.obj, $1000" command.
+       This will load the program named Example.obj into RAM at address $1000.
+       Next, from the command prompt, you would type "Exec $1000" which would move the address $1000 into the PC register and begin executing your program.
+       You must have some sort of OS capable of doing these two steps in order to load and execute programs.
+
+       I think that anything that is going to modify the operand qill just require a write as the last step,
+       so basically we will read the value, do all our operations and then write it back into that position.
+       so I believe there will be precarious manipulation of the PC for this.
+
+     */
 public partial class CPU : ICPU
 {
     #region Registers
 
     private RegisterGroup _registers;
+    private StatusFlag _flags;
+    IMemory _bus;
+
     public Status.Status Status { get; private set; }
     public InstructionStatus InstructionStatus { get; private set; }
 
     #endregion
 
-    #region Flags
+    
 
-    //TODO: Change this to be built from the status byte proper
-    private bool _carryFlag = false;
-    private bool _zeroFlag = false;
-    private bool _interruptDisableFlag = false;
-    private bool _decimalModeFlag = false;
-    private bool _breakCommandFlag = false;
-    private bool _overflowFlag = false;
-    private bool _negativeFlag = false;
-
-    #endregion
-
-    IMemory _bus;
     internal ulong InternalClock { get; private set; }
 
     //internal representations, no real world equivalent (that I know of).
@@ -79,8 +90,8 @@ public partial class CPU : ICPU
     internal void UpdateStatus()
     {
         Status = new Status.Status(_registers.PC, _registers.SP, _registers.A, _registers.X, _registers.Y, CreateStatusByte(), 
-            _carryFlag, _zeroFlag, _interruptDisableFlag, _decimalModeFlag, 
-            _breakCommandFlag, _overflowFlag, _negativeFlag, AccumMode, 
+            _flags.Carry, _flags.Zero, _flags.InterruptDisable, _flags.DecimalMode, 
+            _flags.BreakCommand, _flags.Overflow, _flags.Negative, AccumMode, 
             fetchedByte, fetchedAddress, InternalClock);
     }
     internal void updateInstructionStatus()
@@ -95,7 +106,7 @@ public partial class CPU : ICPU
     public void Reset() { throw new NotImplementedException(); }
     private byte CreateStatusByte()
     {
-        var flags = new bool[8] { _carryFlag, _zeroFlag, _interruptDisableFlag, _decimalModeFlag, false, true, _overflowFlag, _negativeFlag };
+        var flags = new bool[8] { _flags.Carry, _flags.Zero, _flags.InterruptDisable, _flags.DecimalMode, false, true, _flags.Overflow, _flags.Negative };
         byte range = 0;
         if (flags.Length < 8) range = 0;
         for (int i = 0; i < 8; i++) if (flags[i]) range |= (byte)(1 << i);

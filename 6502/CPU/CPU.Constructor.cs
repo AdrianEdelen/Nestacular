@@ -1,5 +1,7 @@
 ﻿using EmulatorTools.Memory;
 using SixtyFiveOhTwo.Registers;
+using SixtyFiveOhTwo.Flags;
+using SixtyFiveOhTwo.Enums;
 
 namespace SixtyFiveOhTwo;
 public partial class CPU
@@ -13,13 +15,16 @@ public partial class CPU
             new ByteRegister(0x00, "X Register"),
             new ByteRegister(0x00, "Y register")
             );
+        _flags = new StatusFlag()
+        {
+            InterruptDisable = true, /* //TODO: what is the actual starting value;*/
+            Negative = false         /* //TODO: what is the actual starting value */
+        };
+
 
         _BCDEnabled = BCDEnabled;
         _bus = bus;
-        InternalClock = 7; //TODO: what is the actual starting value;
-        _interruptDisableFlag = true; //TODO: What is the actual starting value;
-        _negativeFlag = false; //TODO: what is the actual starting value
-
+        InternalClock = 7; 
 
         //Beware those who enter for this is a beast
         //This list is byte mapped, the order of the list is critical, and you can determine what byte aligns with what opcode by using the comment table surrounding the list definition.

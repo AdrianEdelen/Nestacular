@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SixtyFiveOhTwo.Enums;
 namespace SixtyFiveOhTwo;
 public partial class CPU
 {
-    
+
     private AddressModes IMM() //Immediate
     {
         _registers.PC++;
@@ -46,7 +47,7 @@ public partial class CPU
             addr += 0x100;
             addr--;
         }
-        else if (_registers.Y == 0xFF && indexByte == 0xFF) addr--; 
+        else if (_registers.Y == 0xFF && indexByte == 0xFF) addr--;
         else addr += _registers.Y;
 
         fetchedAddress = addr;
@@ -132,7 +133,7 @@ public partial class CPU
         _registers.PC++;
         return AddressModes.Indirect;
     }
-    private AddressModes REL() /*relative*/ 
+    private AddressModes REL() /*relative*/
     {
         //TODO: Why is this empty
         return AddressModes.Relative;

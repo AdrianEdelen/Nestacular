@@ -1,4 +1,5 @@
 ﻿using SixtyFiveOhTwo.Exceptions;
+using SixtyFiveOhTwo.Enums;
 namespace SixtyFiveOhTwo;
 public partial class CPU
 {
@@ -8,10 +9,10 @@ public partial class CPU
     {
         // As The Prodigy once said: This is dangerous.
         //stop it patrick you're scaring him ^~&|^&~&^|()(|&^)
-        var carry = _carryFlag ? 1 : 0; //is the carry flag set
+        var carry = _flags.Carry ? 1 : 0; //is the carry flag set
         var sum = _registers.A + fetchedByte + carry; //sum the Accum+operand+carry(if set)
-        _carryFlag = sum > 0xFF ? true : false; //set/clear the carry based on the result.
-        _overflowFlag = (~(_registers.A ^ fetchedByte) & (_registers.A ^ sum) & 0x80) != 0 ? true : false; //what the fuck
+        _flags.Carry = sum > 0xFF ? true : false; //set/clear the carry based on the result.
+        _flags.Overflow = (~(_registers.A ^ fetchedByte) & (_registers.A ^ sum) & 0x80) != 0 ? true : false; //what the fuck
         _registers.A = (byte)sum;
         AccumChanged();
         return AddClockCyclesStandard(addr);
@@ -26,15 +27,15 @@ public partial class CPU
     {
         if (addr == AddressModes.Implied)
         {
-            if ((_registers.A & 128) != 0) _carryFlag = true;
-            else _carryFlag = false;
+            if ((_registers.A & 128) != 0) _flags.Carry = true;
+            else _flags.Carry = false;
             _registers.A = (byte)(_registers.A << 1);
             SetZeroAndNegFlag(_registers.A);
         }
         else
         {
-            if ((fetchedByte & 128) != 0) _carryFlag = true;
-            else _carryFlag = false;
+            if ((fetchedByte & 128) != 0) _flags.Carry = true;
+            else _flags.Carry = false;
             fetchedByte = (byte)(fetchedByte << 1);
             Write(fetchedAddress, fetchedByte); 
             SetZeroAndNegFlag(fetchedByte);
@@ -54,12 +55,12 @@ public partial class CPU
         //BIT sets the z flag as though the value in the address tested were anded together with the accum the n and v flags are set to match bits 7 and 6 respectively in the 
         //value store at the tested address
         var pos = fetchedByte;
-        if ((_registers.A & pos) == 0x00) _zeroFlag = true;
-        else _zeroFlag = false;
-        if ((pos & 128) != 0) _negativeFlag = true;
-        else _negativeFlag = false;
-        if ((pos & 64) != 0) _overflowFlag = true;
-        else _overflowFlag = false;
+        if ((_registers.A & pos) == 0x00) _flags.Zero = true;
+        else _flags.Zero = false;
+        if ((pos & 128) != 0) _flags.Negative = true;
+        else _flags.Negative = false;
+        if ((pos & 64) != 0) _flags.Overflow = true;
+        else _flags.Overflow = false;
         return addr switch
         {
             AddressModes.ZeroPage => 3,
@@ -74,22 +75,22 @@ public partial class CPU
         if (bb > aa)
         {
             byte cc = (byte)(bb - aa);
-            _carryFlag = true;
-            _zeroFlag = false;
-            _negativeFlag = (cc & 128) != 0;
+            _flags.Carry = true;
+            _flags.Zero = false;
+            _flags.Negative = (cc & 128) != 0;
         }
         else if (bb < aa)
         {
             byte cc = (byte)(bb - aa);
-            _carryFlag = false;
-            _zeroFlag = false;
-            _negativeFlag = (cc & 128) != 0;
+            _flags.Carry = false;
+            _flags.Zero = false;
+            _flags.Negative = (cc & 128) != 0;
         }
         else
         {
-            _negativeFlag = false;
-            _zeroFlag = true;
-            _carryFlag = true;
+            _flags.Negative = false;
+            _flags.Zero = true;
+            _flags.Carry = true;
         }
         return AddClockCyclesStandard(addr);
     }
@@ -103,22 +104,22 @@ public partial class CPU
         if (bb > aa)
         {
             byte cc = (byte)(bb - aa);
-            _carryFlag = true;
-            _zeroFlag = false;
-            _negativeFlag = (cc & 128) != 0;
+            _flags.Carry = true;
+            _flags.Zero = false;
+            _flags.Negative = (cc & 128) != 0;
         }
         else if (bb < aa)
         {
             byte cc = (byte)(bb - aa);
-            _carryFlag = false;
-            _zeroFlag = false;
-            _negativeFlag = (cc & 128) != 0;
+            _flags.Carry = false;
+            _flags.Zero = false;
+            _flags.Negative = (cc & 128) != 0;
         }
         else
         {
-            _negativeFlag = false;
-            _zeroFlag = true;
-            _carryFlag = true;
+            _flags.Negative = false;
+            _flags.Zero = true;
+            _flags.Carry = true;
         }
         return clockCycles;
     }
@@ -140,22 +141,22 @@ public partial class CPU
         if (bb > aa)
         {
             byte cc = (byte)(bb - aa);
-            _carryFlag = true;
-            _zeroFlag = false;
-            _negativeFlag = (cc & 128) != 0;
+            _flags.Carry = true;
+            _flags.Zero = false;
+            _flags.Negative = (cc & 128) != 0;
         }
         else if (bb < aa)
         {
             byte cc = (byte)(bb - aa);
-            _carryFlag = false;
-            _zeroFlag = false;
-            _negativeFlag = (cc & 128) != 0;
+            _flags.Carry = false;
+            _flags.Zero = false;
+            _flags.Negative = (cc & 128) != 0;
         }
         else
         {
-            _negativeFlag = false;
-            _zeroFlag = true;
-            _carryFlag = true;
+            _flags.Negative = false;
+            _flags.Zero = true;
+            _flags.Carry = true;
         }
         return clockCycles;
     }
@@ -193,13 +194,13 @@ public partial class CPU
         var clockCycles = 0;
         if (AccumMode)
         {
-            if ((_registers.A & 1) != 0) _carryFlag = true;
-            else _carryFlag = false;
+            if ((_registers.A & 1) != 0) _flags.Carry = true;
+            else _flags.Carry = false;
             _registers.A = (byte)(_registers.A >> 1);
             SetZeroAndNegFlag(_registers.A);
         }
-        if ((fetchedByte & 1) != 0) _carryFlag = true;
-        else _carryFlag = false;
+        if ((fetchedByte & 1) != 0) _flags.Carry = true;
+        else _flags.Carry = false;
         fetchedByte = (byte)(fetchedByte >> 1);
         SetZeroAndNegFlag(fetchedByte);
         Write(fetchedAddress, fetchedByte);
@@ -209,7 +210,7 @@ public partial class CPU
     int PHP(AddressModes addr)
     {
         var clockCycles = 0;
-        bool[] flags = new bool[8] { _carryFlag, _zeroFlag, _interruptDisableFlag, _decimalModeFlag, true, true, _overflowFlag, _negativeFlag };
+        bool[] flags = new bool[8] { _flags.Carry, _flags.Zero, _flags.InterruptDisable, _flags.DecimalMode, true, true, _flags.Overflow, _flags.Negative };
         byte range = 0;
         for (int i = 0; i < 8; i++) if (flags[i]) range |= (byte)(1 << i);
         PushToStack(range);
@@ -219,15 +220,15 @@ public partial class CPU
     {
         var clockCycles = 0;
         var status = PopFromStack();
-        _carryFlag = (status & 1) != 0;
-        _zeroFlag = (status & 2) != 0;
-        _interruptDisableFlag = (status & 4) != 0;
-        _decimalModeFlag = (status & 8) != 0;
+        _flags.Carry = (status & 1) != 0;
+        _flags.Zero = (status & 2) != 0;
+        _flags.InterruptDisable = (status & 4) != 0;
+        _flags.DecimalMode = (status & 8) != 0;
         //TODO: why is this commented out (im assuming they are ignored here
         //Flags.BreakCommandFlag = (status & 16) != 0;
         //Flags.nullFlag = (status & 32) != 0;
-        _overflowFlag = (status & 64) != 0;
-        _negativeFlag = (status & 128) != 0;
+        _flags.Overflow = (status & 64) != 0;
+        _flags.Negative = (status & 128) != 0;
         return clockCycles;
     }
     int ROL(AddressModes addr)
@@ -236,10 +237,10 @@ public partial class CPU
         if (AccumMode)
         {
             byte bit0;
-            if (_carryFlag) bit0 = 1;
+            if (_flags.Carry) bit0 = 1;
             else bit0 = 0;
             //check bit7 to see what the new carry flag chould be
-            _carryFlag = (_registers.A & 128) != 0 ? true : false;
+            _flags.Carry = (_registers.A & 128) != 0 ? true : false;
             _registers.A = (byte)(_registers.A << 1);
             _registers.A = (byte)(_registers.A | bit0);
             SetZeroAndNegFlag((byte)(_registers.A | bit0));
@@ -247,10 +248,10 @@ public partial class CPU
         else
         {
             byte bit0;
-            if (_carryFlag) bit0 = 1;
+            if (_flags.Carry) bit0 = 1;
             else bit0 = 0;
             //check bit7 to see what the new carry flag chould be
-            _carryFlag = (fetchedByte & 128) != 0 ? true : false;
+            _flags.Carry = (fetchedByte & 128) != 0 ? true : false;
             fetchedByte = (byte)(fetchedByte << 1); //shift the accum left 1
             Write(fetchedAddress, (byte)(fetchedByte | bit0));
             SetZeroAndNegFlag((byte)(fetchedByte | bit0));
@@ -264,22 +265,22 @@ public partial class CPU
         if (AccumMode)
         {
             // carry slots into bit7 and bit 0 is shifted into the carry
-            if (_carryFlag) bit7 = 1;
+            if (_flags.Carry) bit7 = 1;
             else bit7 = 0;
             bit7 = (byte)(bit7 << 7);
             //check bit0 to see what the new carry flag chould be
-            _carryFlag = (_registers.A & 1) != 0 ? true : false;
+            _flags.Carry = (_registers.A & 1) != 0 ? true : false;
             var shiftedAccum = (byte)(_registers.A >> 1); //shift the accum right 1
             _registers.A = (byte)(shiftedAccum | bit7);
             AccumChanged();
         }
         else
         {
-            if (_carryFlag) bit7 = 1;
+            if (_flags.Carry) bit7 = 1;
             else bit7 = 0;
             bit7 = (byte)(bit7 << 7);
             //check bit0 to see what the new carry flag chould be
-            _carryFlag = (fetchedByte & 1) != 0 ? true : false;
+            _flags.Carry = (fetchedByte & 1) != 0 ? true : false;
             fetchedByte = (byte)(fetchedByte >> 1); //shift the accum right 1
             Write(fetchedAddress, (byte)(fetchedByte | bit7));
             SetZeroAndNegFlag((byte)(fetchedByte | bit7));
@@ -290,12 +291,12 @@ public partial class CPU
     {
         var clockCycles = 0;
         var status = PopFromStack();
-        _carryFlag = (status & 1) != 0;
-        _zeroFlag = (status & 2) != 0;
-        _interruptDisableFlag = (status & 4) != 0;
-        _decimalModeFlag = (status & 8) != 0;
-        _overflowFlag = (status & 64) != 0;
-        _negativeFlag = (status & 128) != 0;
+        _flags.Carry = (status & 1) != 0;
+        _flags.Zero = (status & 2) != 0;
+        _flags.InterruptDisable = (status & 4) != 0;
+        _flags.DecimalMode = (status & 8) != 0;
+        _flags.Overflow = (status & 64) != 0;
+        _flags.Negative = (status & 128) != 0;
         var PC1 = PopFromStack();
         var PC2 = PopFromStack();
         _registers.PC = (ushort)(PC2 << 8 | PC1);
@@ -314,18 +315,29 @@ public partial class CPU
         var clockCycles = 0;
         byte op = (byte)~fetchedByte;
 
-        var carry = _carryFlag ? 1 : 0; //is the carry flag set
+        var carry = _flags.Carry ? 1 : 0; //is the carry flag set
         var sum = _registers.A + op + carry; //sum the Accum+operand+carry(if set)
-        _carryFlag = sum > 0xFF ? true : false; //set/clear the carry based on the result.
-        _overflowFlag = (~(_registers.A ^ op) & (_registers.A ^ sum) & 0x80) != 0 ? true : false;//same as addition but with negated operand
+        _flags.Carry = sum > 0xFF ? true : false; //set/clear the carry based on the result.
+        _flags.Overflow = (~(_registers.A ^ op) & (_registers.A ^ sum) & 0x80) != 0 ? true : false;//same as addition but with negated operand
         _registers.A = (byte)sum; //set accumulator
         AccumChanged();
         return clockCycles;
     }
     #endregion
     #region One Line / Simple Instructions
-    int PLA(AddressModes addr) { var clockCycles = 0; _registers.A = PopFromStack(); SetZeroAndNegFlag(_registers.A); return clockCycles; }
-    int STY(AddressModes addr) { var clockCycles = 0; Write(fetchedAddress, _registers.Y); return clockCycles; }
+    int PLA(AddressModes addr) 
+    { 
+        var clockCycles = 0; 
+        _registers.A = PopFromStack(); 
+        SetZeroAndNegFlag(_registers.A); 
+        return clockCycles; 
+    }
+    int STY(AddressModes addr) 
+    { 
+        var clockCycles = 0; 
+        Write(fetchedAddress, _registers.Y); 
+        return clockCycles; 
+    }
     int TAX(AddressModes addr) { var clockCycles = 0; _registers.X = _registers.A; SetZeroAndNegFlag(_registers.X); return clockCycles; }
     int TAY(AddressModes addr) { var clockCycles = 0; _registers.Y = _registers.A; SetZeroAndNegFlag(_registers.Y); return clockCycles; }
     int TSX(AddressModes addr) { var clockCycles = 0; _registers.X = _registers.SP; SetZeroAndNegFlag(_registers.X); return clockCycles; }
@@ -345,21 +357,21 @@ public partial class CPU
     int DEY(AddressModes addr) { var clockCycles = 0; _registers.Y--; SetZeroAndNegFlag(_registers.Y); return clockCycles; }
     int EOR(AddressModes addr) { var clockCycles = 0; _registers.A ^= fetchedByte; AccumChanged(); return clockCycles; }
     int JAM(AddressModes addr) { throw new CPUHaltedException($"JAM opcode called. CPU Status: {Status} | InstructionStatus: {InstructionStatus}"); }
-    int BMI(AddressModes addr) { var clockCycles = 0; Branch(_negativeFlag); return clockCycles; }
-    int BNE(AddressModes addr) { var clockCycles = 0; Branch(!_zeroFlag); return clockCycles; }
-    int BPL(AddressModes addr) { var clockCycles = 0; Branch(!_negativeFlag); return clockCycles; }
+    int BMI(AddressModes addr) { var clockCycles = 0; Branch(_flags.Negative); return clockCycles; }
+    int BNE(AddressModes addr) { var clockCycles = 0; Branch(!_flags.Zero); return clockCycles; }
+    int BPL(AddressModes addr) { var clockCycles = 0; Branch(!_flags.Negative); return clockCycles; }
     int BRK(AddressModes addr) { var clockCycles = 0; _registers.PC++; NMI(); return clockCycles; }
-    int BVC(AddressModes addr) { var clockCycles = 0; Branch(!_overflowFlag); return clockCycles; }
-    int BVS(AddressModes addr) { var clockCycles = 0; Branch(_overflowFlag); return clockCycles; }
-    int CLC(AddressModes addr) { var clockCycles = 0; _carryFlag = false; return clockCycles; }
-    int CLI(AddressModes addr) { var clockCycles = 0; _decimalModeFlag = false; return clockCycles; }
-    int CLV(AddressModes addr) { var clockCycles = 0; _overflowFlag = false; return clockCycles; }
-    int BCC(AddressModes addr) { var clockCycles = 0; Branch(!_carryFlag); return clockCycles; }
-    int BCS(AddressModes addr) { var clockCycles = 0; Branch(_carryFlag); return clockCycles; }
-    int BEQ(AddressModes addr) { var clockCycles = 0; Branch(_zeroFlag); return clockCycles; }
-    int SEC(AddressModes addr) { var clockCycles = 0; _carryFlag = true; return clockCycles; }
-    int SED(AddressModes addr) { var clockCycles = 0; _decimalModeFlag = true; return clockCycles; }
-    int SEI(AddressModes addr) { var clockCycles = 0; _interruptDisableFlag = true; return clockCycles; }
+    int BVC(AddressModes addr) { var clockCycles = 0; Branch(!_flags.Overflow); return clockCycles; }
+    int BVS(AddressModes addr) { var clockCycles = 0; Branch(_flags.Overflow); return clockCycles; }
+    int CLC(AddressModes addr) { var clockCycles = 0; _flags.Carry = false; return clockCycles; }
+    int CLI(AddressModes addr) { var clockCycles = 0; _flags.DecimalMode = false; return clockCycles; }
+    int CLV(AddressModes addr) { var clockCycles = 0; _flags.Overflow = false; return clockCycles; }
+    int BCC(AddressModes addr) { var clockCycles = 0; Branch(!_flags.Carry); return clockCycles; }
+    int BCS(AddressModes addr) { var clockCycles = 0; Branch(_flags.Carry); return clockCycles; }
+    int BEQ(AddressModes addr) { var clockCycles = 0; Branch(_flags.Zero); return clockCycles; }
+    int SEC(AddressModes addr) { var clockCycles = 0; _flags.Carry = true; return clockCycles; }
+    int SED(AddressModes addr) { var clockCycles = 0; _flags.DecimalMode = true; return clockCycles; }
+    int SEI(AddressModes addr) { var clockCycles = 0; _flags.InterruptDisable = true; return clockCycles; }
     int STA(AddressModes addr) { var clockCycles = 0; Write(fetchedAddress, _registers.A); return clockCycles; }
     int STX(AddressModes addr) { var clockCycles = 0; Write(fetchedAddress, _registers.X); return clockCycles; }
     int RLA(AddressModes addr) { var clockCycles = 0; ROL(addr); fetchedByte = Read(fetchedAddress); AND(addr); return clockCycles; } //TODO: Verify this works.
@@ -372,7 +384,7 @@ public partial class CPU
     int DCP(AddressModes addr) { var clockCycles = 0; DEC(addr); CMP(addr); return clockCycles; }
     int LAX(AddressModes addr) { var clockCycles = 0; LDA(addr); LDX(addr); return clockCycles; }
     int SBX(AddressModes addr) { var clockCycles = 0; CMP(addr); DEX(addr); SetZeroAndNegFlag(fetchedByte); return clockCycles; }
-    int CLD(AddressModes addr) { var clockCycles = 0; _decimalModeFlag = false; return clockCycles; }
+    int CLD(AddressModes addr) { var clockCycles = 0; _flags.DecimalMode = false; return clockCycles; }
     #endregion
     #region Unimplemented Instructions
     //So far I have not encountered these instructions. 
@@ -388,37 +400,5 @@ public partial class CPU
     int LAS(AddressModes addr) { throw new NotImplementedException(); }
 
     #endregion
-
-
-    private int AddClockCyclesStandard(AddressModes addr)
-    {
-        var retVal = 0;
-        if (didBranch) retVal += CheckBranchSamePage();
-        retVal += CheckPageCross();
-        return retVal += addr switch
-        {
-            AddressModes.Immediate => 2,
-            AddressModes.ZeroPage => 3,
-            AddressModes.XZeroPage => 4,
-            AddressModes.Absolute => 4,
-            AddressModes.XAbsolute => 4,
-            AddressModes.YAbsolute => 4,
-            AddressModes.XIndirect => 6,
-            AddressModes.YIndirect => 5,
-            _ => throw new InvalidAddressingModeException()
-        };
-    }
-    private int CheckPageCross()
-    {
-        //TODO: Implement this
-        return 0;
-    }
-    private int CheckBranchSamePage()
-    {
-        bool branchOnSamePage = false;
-        //TODO: Determine is the branch occurs on the same page;
-        if (branchOnSamePage) return 1;
-        else return 2;
-    }
 
 }

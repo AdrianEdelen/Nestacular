@@ -1,5 +1,4 @@
-﻿using static SixtyFiveOhTwo.CPU;
-
+﻿using SixtyFiveOhTwo.Enums;
 namespace SixtyFiveOhTwo;
 internal class Instruction
 {

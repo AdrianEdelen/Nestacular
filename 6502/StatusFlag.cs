@@ -4,18 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SixtyFiveOhTwo.Exceptions;
-namespace SixtyFiveOhTwo.CPU;
-
-internal enum StatusFlags
-{
-    Carry,
-    Zero,
-    InterruptDisable,
-    DecimalMode,
-    BreakCommand,
-    Overflow,
-    Negative
-}
+using SixtyFiveOhTwo.Enums;
+namespace SixtyFiveOhTwo.Flags;
 internal class StatusFlag
 {
     internal bool Carry { get; set; }
